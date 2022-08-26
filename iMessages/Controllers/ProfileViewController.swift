@@ -20,8 +20,6 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("Enter")
-        
         profileConfigurations.register(UITableViewCell.self, forCellReuseIdentifier: K.ProfileView.TableView.cellIdentifier)
         profileConfigurations.dataSource = self
         profileConfigurations.delegate = self
@@ -63,7 +61,7 @@ extension ProfileViewController {
             case .success(let url):
                 strongSelf.downloadProfilePicture(in: profileImageView, with: url)
             case .failure(let err):
-                print("Failed to get the profile picture: \(err.localizedDescription)")
+                print(err.localizedDescription)
             }
         })
         
@@ -74,7 +72,7 @@ extension ProfileViewController {
     func downloadProfilePicture(in imageView: UIImageView, with urlPath: URL) {
         URLSession.shared.dataTask(with: urlPath, completionHandler: { data, _, error in
             guard let data = data, error == nil else {
-                print("Failed to get the profile picture.")
+                print(error?.localizedDescription ?? "")
                 return
             }
             

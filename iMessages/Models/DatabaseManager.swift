@@ -42,8 +42,8 @@ final class DatabaseManager {
                 if var usersCollection = snapshot.value as? [[String: String]] {
                     // Append users
                     usersCollection.append([
-                        "name": user.firstName + " " + user.lastName,
-                        "email": user.safeEmail
+                        K.Database.nameField: user.firstName + " " + user.lastName,
+                        K.Database.emailField: user.safeEmail
                     ])
                     
                     self.database.child(K.Database.usersChild).setValue(usersCollection, withCompletionBlock: { error, _ in
@@ -58,8 +58,8 @@ final class DatabaseManager {
                     // Create new array
                     let newCollection: [[String: String]] = [
                         [
-                            "name": user.firstName + " " + user.lastName,
-                            "email": user.safeEmail
+                            K.Database.nameField: user.firstName + " " + user.lastName,
+                            K.Database.emailField: user.safeEmail
                         ]
                     ]
                     

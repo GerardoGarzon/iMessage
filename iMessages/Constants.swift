@@ -24,6 +24,8 @@ struct K {
         struct FacebookLogin {
             static let titleError = "Facebook error"
             static let bodyError = "User failed to log in with Facebook"
+            static let profilePermission = "public_profile"
+            static let emailPermission = "email"
         }
         struct GoogleLogin {
             static let titleError = "Google error"
@@ -101,5 +103,8 @@ struct K {
         static let lastName = "last_name"
         static let emailAddress = "email_address"
         static let profilePicture = "profile_pictureURL"
+        
+        static let nameField: "name"
+        static let emailField: "email"
     }
 }

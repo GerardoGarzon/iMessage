@@ -88,7 +88,7 @@ class LoginViewController: UIViewController {
     
     private let facebookSingInButton: FBLoginButton = {
         let button = FBLoginButton()
-        button.permissions = ["public_profile", "email"]
+        button.permissions = [K.LoginView.FacebookLogin.profilePermission, K.LoginView.FacebookLogin.emailPermission]
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 9
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
