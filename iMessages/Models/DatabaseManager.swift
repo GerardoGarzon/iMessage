@@ -12,23 +12,23 @@ final class DatabaseManager {
     static let shared = DatabaseManager()
     
     private let database = Database.database().reference()
-
+    
     // MARK: - User managment
     
     public func userExists(with user: String, completion: @escaping ((Bool) -> Void)) {
-        var email = user.replacingOccurrences(of: ".", with: "-")
-        email = email.replacingOccurrences(of: "@", with: "-")
-        database.child(K.Database.usersChild).child(email).observeSingleEvent(of: .value, with: { snapshot in
-            if snapshot.value != nil {
+        let email = ChatUser.getSafeEmail(with: user)
+        database.child(email).observeSingleEvent(of: .value, with: { snapshot in
+            guard snapshot.value as? [String: Any] != nil else {
                 completion(false)
-            } else {
-                completion(true)
+                return
             }
+            
+            completion(true)
         })
     }
     
     public func insertUser(with user: ChatUser, completion: @escaping (Bool) -> (Void)) {
-        database.child(K.Database.usersChild).child(user.safeEmail).setValue([
+        database.child(user.safeEmail).setValue([
             K.Database.firstName: user.firstName,
             K.Database.lastName: user.lastName,
             K.Database.emailAddress: user.emailAddress
@@ -37,7 +37,50 @@ final class DatabaseManager {
                 completion(false)
                 return
             }
-            completion(true)
+            
+            self.database.child(K.Database.usersChild).observeSingleEvent(of: .value, with: { snapshot in
+                if var usersCollection = snapshot.value as? [[String: String]] {
+                    // Append users
+                    usersCollection.append([
+                        "name": user.firstName + " " + user.lastName,
+                        "email": user.safeEmail
+                    ])
+                    
+                    self.database.child(K.Database.usersChild).setValue(usersCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        
+                        completion(true)
+                    })
+                } else {
+                    // Create new array
+                    let newCollection: [[String: String]] = [
+                        [
+                            "name": user.firstName + " " + user.lastName,
+                            "email": user.safeEmail
+                        ]
+                    ]
+                    
+                    self.database.child(K.Database.usersChild).setValue(newCollection, withCompletionBlock: { error, _ in
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
+                        
+                        completion(true)
+                    })
+                }
+            })
+        })
+    }
+    
+    public func readUsersCollection(completion: @escaping ([[String: String]]) -> (Void)) {
+        database.child(K.Database.usersChild).observeSingleEvent(of: .value, with: { snapshot in
+            if let users = snapshot.value as? [[String: String]] {
+                completion(users)
+            }
         })
     }
     

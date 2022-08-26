@@ -11,6 +11,7 @@ target 'iMessages' do
   pod 'FirebaseDatabase'
   pod 'FirebaseStorage'
   pod 'GoogleSignIn'
+  pod 'FBSDKLoginKit'
   
   pod 'JGProgressHUD'
   pod 'MessageKit'

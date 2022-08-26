@@ -46,6 +46,7 @@ class NewContactViewController: UIViewController {
                                                             action: #selector(dismissSelf))
         
         searchBar.becomeFirstResponder()
+        searchBar.delegate = self
         
         view.addSubview(friendsTableView)
         view.addSubview(noResultLabel)
@@ -62,7 +63,14 @@ class NewContactViewController: UIViewController {
 }
 
 extension NewContactViewController: UISearchBarDelegate {
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //
+        dismissSelf()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        DatabaseManager.shared.readUsersCollection(completion: { arrayUsers in
+            print(arrayUsers)
+        })
     }
 }

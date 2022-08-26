@@ -9,6 +9,7 @@ import UIKit
 import FirebaseAuth
 import JGProgressHUD
 import GoogleSignIn
+import FBSDKLoginKit
 import FirebaseCore
 
 class LoginViewController: UIViewController {
@@ -85,6 +86,15 @@ class LoginViewController: UIViewController {
         return label
     }()
     
+    private let facebookSingInButton: FBLoginButton = {
+        let button = FBLoginButton()
+        button.permissions = ["public_profile", "email"]
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 9
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        return button
+    }()
+    
     private let googleSingInButton: GIDSignInButton = {
         let button = GIDSignInButton()
         button.style = .wide
@@ -112,14 +122,15 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(passwordTextField)
         scrollView.addSubview(loginButton)
         scrollView.addSubview(orButton)
+        scrollView.addSubview(facebookSingInButton)
         scrollView.addSubview(googleSingInButton)
         
         // Add actions and delegates
         loginButton.addTarget(self, action: #selector(didTapLogin), for: .touchUpInside)
+        googleSingInButton.addTarget(self, action: #selector(googleDidTapSingIn), for: .touchUpInside)
         emailTextField.delegate = self
         passwordTextField.delegate = self
-        
-        googleSingInButton.addTarget(self, action: #selector(googleDidTapSingIn), for: .touchUpInside)
+        facebookSingInButton.delegate = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -148,8 +159,12 @@ class LoginViewController: UIViewController {
                                 y: loginButton.bottom + 20,
                                 width: scrollView.right - 60,
                                 height: 50)
+        facebookSingInButton.frame = CGRect(x: 30,
+                                            y: orButton.bottom + 20,
+                                            width: scrollView.right - 60,
+                                            height: 50)
         googleSingInButton.frame = CGRect(x: 30,
-                                          y: orButton.bottom + 20,
+                                          y: facebookSingInButton.bottom + 20,
                                           width: scrollView.right - 60,
                                           height: 50)
         
@@ -219,6 +234,7 @@ extension LoginViewController {
                     style: .alert,
                     options: [UIAlertAction(title: K.RegisterView.RegisterAlert.action, style: .default)])
             } else {
+                UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
                 let contactsViewController = ContactsViewController()
                 contactsViewController.title = K.ContactsView.title
                 strongSelf.navigationController?.dismiss(animated: true, completion: nil)
@@ -266,11 +282,13 @@ extension LoginViewController {
             
             guard let email = user.profile?.email,
                   let firstName = user.profile?.givenName,
-                  let lastName = user.profile?.givenName else {
+                  let lastName = user.profile?.familyName else {
                 return
             }
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
+            
+            UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
             
             strongSelf.createGoogleUser(with: credential, email, firstName, lastName, user)
         }
@@ -279,35 +297,50 @@ extension LoginViewController {
     func createGoogleUser(with credential: AuthCredential, _ email: String, _ firstName: String, _ lastName: String, _ user: GIDGoogleUser) {
         DatabaseManager.shared.userExists(with: email, completion: { [weak self] exist in
             guard let strongSelf = self else {
+                DispatchQueue.main.async {
+                    self!.spinner.dismiss()
+                }
                 return
             }
             
-            if !exist {
-                Auth.auth().signIn(with: credential, completion: { authResult, error in
-                    if let err = error {
-                        AlertManager.createAlert(sender: strongSelf,
-                                                 title: K.LoginView.GoogleLogin.titleError,
-                                                 body: err.localizedDescription,
-                                                 style: .alert,
-                                                 options: [UIAlertAction(title: K.LoginView.LoginAlert.action, style: .default)])
-                        return
+            Auth.auth().signIn(with: credential, completion: { authResult, error in
+                if let err = error {
+                    AlertManager.createAlert(sender: strongSelf,
+                                             title: K.LoginView.GoogleLogin.titleError,
+                                             body: err.localizedDescription,
+                                             style: .alert,
+                                             options: [UIAlertAction(title: K.LoginView.LoginAlert.action, style: .default)])
+                    DispatchQueue.main.async {
+                        strongSelf.spinner.dismiss()
                     }
-                    
+                    return
+                }
+                
+                if !exist {
                     let chatUser = ChatUser(firstName: firstName, lastName: lastName, emailAddress: email)
                     DatabaseManager.shared.insertUser(with: chatUser, completion: { success in
                         if success {
                             if ((user.profile?.hasImage) != nil) {
                                 guard let downloadURL = user.profile?.imageURL(withDimension: 200) else {
+                                    DispatchQueue.main.async {
+                                        strongSelf.spinner.dismiss()
+                                    }
                                     return
                                 }
                                 
                                 URLSession.shared.dataTask(with: downloadURL, completionHandler: { data, response, error in
                                     guard let data = data else {
+                                        DispatchQueue.main.async {
+                                            strongSelf.spinner.dismiss()
+                                        }
                                         return
                                     }
                                     
                                     if let err = error {
                                         print(err.localizedDescription)
+                                        DispatchQueue.main.async {
+                                            strongSelf.spinner.dismiss()
+                                        }
                                         return
                                     }
                                     
@@ -325,12 +358,128 @@ extension LoginViewController {
                             }
                         }
                     })
-                    DispatchQueue.main.async {
-                        strongSelf.spinner.dismiss()
-                    }
-                    strongSelf.navigationController?.dismiss(animated: true, completion: nil)
-                })
-            }
+                }
+                
+                DispatchQueue.main.async {
+                    strongSelf.spinner.dismiss()
+                }
+                strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+            })
         })
     }
+}
+
+// MARK: - Facebook login delegate
+
+extension LoginViewController: LoginButtonDelegate {
+    func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
+        //
+    }
+    
+    func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        self.spinner.show(in: view)
+        guard let token = result?.token?.tokenString else {
+            self.facebookError()
+            return
+        }
+        
+        let facebookRequest = FBSDKLoginKit.GraphRequest(graphPath: "me",
+                                                         parameters: ["fields": "email, first_name, last_name, picture.type(large)"],
+                                                         tokenString: token,
+                                                         version: nil,
+                                                         httpMethod: .get)
+        facebookRequest.start(completion: { _, result, error in
+            guard let result = result as? [String: Any], error == nil else {
+                self.facebookError()
+                return
+            }
+            
+            guard let firstName = result["first_name"] as? String,
+                  let lastName = result["last_name"] as? String,
+                  let picturePath = result["picture"] as? [String: Any?],
+                  let data = picturePath["data"] as? [String: Any?],
+                  let downloadURL = data["url"] as? String,
+                  let email = result["email"] as? String else {
+                self.facebookError()
+                return
+            }
+            UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+            let credential = FacebookAuthProvider.credential(withAccessToken: token)
+            self.createFacebookUser(with: credential, email, firstName, lastName, downloadURL)
+        })
+    }
+    
+    func createFacebookUser(with credential: AuthCredential, _ email: String, _ firstName: String, _ lastName: String, _ downloadURL: String) {
+        
+        DatabaseManager.shared.userExists(with: email, completion: { exist in
+            Auth.auth().signIn(with: credential, completion: { [weak self] authResult, error in
+                guard let strongSelf = self else {
+                    DispatchQueue.main.async {
+                        self!.spinner.dismiss()
+                    }
+                    return
+                }
+                
+                if error != nil {
+                    strongSelf.facebookError()
+                    return
+                }
+                
+                
+                if !exist {
+                    let chatUser = ChatUser(firstName: firstName, lastName: lastName, emailAddress: email)
+                    DatabaseManager.shared.insertUser(with: chatUser, completion: { success in
+                        if success {
+                            URLSession.shared.dataTask(with: URL(string: downloadURL)!, completionHandler: { data, response, error in
+                                guard let data = data else {
+                                    DispatchQueue.main.async {
+                                        strongSelf.spinner.dismiss()
+                                    }
+                                    return
+                                }
+                                
+                                if let err = error {
+                                    print(err.localizedDescription)
+                                    DispatchQueue.main.async {
+                                        strongSelf.spinner.dismiss()
+                                    }
+                                    return
+                                }
+                                
+                                let fileName = chatUser.profilePicture
+                                StorageManager.shared.uploadProfilePicture(with: data, fileName: fileName, completion: { result in
+                                    switch result {
+                                    case .success(let dowloadURL):
+                                        UserDefaults.standard.set(dowloadURL, forKey: "URL")
+                                        print(dowloadURL)
+                                    case .failure(let error):
+                                        print(error)
+                                    }
+                                })
+                            }).resume()
+                        }
+                    })
+                }
+                
+                DispatchQueue.main.async {
+                    strongSelf.spinner.dismiss()
+                }
+                
+                strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+            })
+        })
+    }
+    
+    func facebookError() {
+        AlertManager.createAlert(sender: self,
+                                 title: K.LoginView.FacebookLogin.titleError,
+                                 body: K.LoginView.FacebookLogin.bodyError,
+                                 style: .alert,
+                                 options: [UIAlertAction(title: K.LoginView.LoginAlert.action, style: .default)])
+        DispatchQueue.main.async {
+            self.spinner.dismiss()
+        }
+    }
+    
+    
 }

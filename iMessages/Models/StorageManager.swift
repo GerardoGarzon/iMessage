@@ -33,4 +33,15 @@ final class StorageManager {
             })
         })
     }
+    
+    public func getDownloadURL(for path: String, completion: @escaping (Result<URL, Error>) -> (Void)) {
+        
+        storage.child(path).downloadURL(completion: { url, error in
+            guard let url = url, error == nil else {
+                completion(.failure(error!))
+                return
+            }
+            completion(.success(url))
+        })
+    }
 }

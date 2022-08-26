@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.274239422820-mt7a3m2em3tbei01nc9n2ve4c0rmsp6g</string>
-			</array>
-		</dict>
-	</array>
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
-		<key>UISceneConfigurations</key>
-		<dict>
-			<key>UIWindowSceneSessionRoleApplication</key>
-			<array>
-				<dict>
-					<key>UISceneConfigurationName</key>
-					<string>Default Configuration</string>
-					<key>UISceneDelegateClassName</key>
-					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-					<key>UISceneStoryboardFile</key>
-					<string>Main</string>
-				</dict>
-			</array>
-		</dict>
-	</dict>
-</dict>
+    <dict>
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>com.googleusercontent.apps.274239422820-mt7a3m2em3tbei01nc9n2ve4c0rmsp6g</string>
+                </array>
+            </dict>
+            <dict>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>fb744243920017077</string>
+                </array>
+            </dict>
+        </array>
+        <key>UIApplicationSceneManifest</key>
+        <dict>
+            <key>UIApplicationSupportsMultipleScenes</key>
+            <false/>
+            <key>UISceneConfigurations</key>
+            <dict>
+                <key>UIWindowSceneSessionRoleApplication</key>
+                <array>
+                    <dict>
+                        <key>UISceneConfigurationName</key>
+                        <string>Default Configuration</string>
+                        <key>UISceneDelegateClassName</key>
+                        <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+                        <key>UISceneStoryboardFile</key>
+                        <string>Main</string>
+                    </dict>
+                </array>
+            </dict>
+        </dict>
+        <key>FacebookAppID</key>
+        <string>744243920017077</string>
+        <key>FacebookClientToken</key>
+        <string>298c0da8eece3812997fd951a10221f6</string>
+        <key>FacebookDisplayName</key>
+        <string>Messages App</string>
+        
+        <key>LSApplicationQueriesSchemes</key>
+        <array>
+            <string>fbapi</string>
+            <string>fb-messenger-share-api</string>
+        </array>
+    </dict>
 </plist>

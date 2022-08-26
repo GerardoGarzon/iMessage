@@ -12,13 +12,20 @@ struct ChatUser {
     let lastName: String
     let emailAddress: String
     var safeEmail: String {
+        return ChatUser.getSafeEmail(with: emailAddress)
+    }
+    var profilePicture: String {
+        return ChatUser.getProfilePictureName(with: safeEmail)
+    }
+    // let profilePictureURL: String
+    
+    static func getSafeEmail(with emailAddress: String) -> String {
         var email = emailAddress.replacingOccurrences(of: ".", with: "-")
         email = email.replacingOccurrences(of: "@", with: "-")
         return email
     }
-    var profilePicture: String {
+    
+    static func getProfilePictureName(with safeEmail: String) -> String {
         return "\(safeEmail)_profile_picture.png"
     }
-    // let profilePictureURL: String
-    
 }

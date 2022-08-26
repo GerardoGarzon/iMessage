@@ -13,6 +13,7 @@ import FirebaseDatabase
 import GoogleSignIn
 import GoogleUtilities
 import GoogleDataTransport
+import FBSDKCoreKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,6 +26,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Navbar configuration color
         UINavigationBar.appearance().tintColor = UIColor(named: "SecondaryColor")
+        
+        // Facebook login
+        ApplicationDelegate.shared.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
         
         return true
     }
@@ -45,6 +52,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     @available(iOS 9.0, *)
     func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
+        ApplicationDelegate.shared.application(
+            application,
+            open: url,
+            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+            annotation: options[UIApplication.OpenURLOptionsKey.annotation]
+        )
         return GIDSignIn.sharedInstance.handle(url)
     }
     
