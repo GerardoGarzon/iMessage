@@ -76,12 +76,18 @@ final class DatabaseManager {
         })
     }
     
-    public func readUsersCollection(completion: @escaping ([[String: String]]) -> (Void)) {
+    public func readUsersCollection(completion: @escaping (Result<[[String: String]], Error>) -> (Void)) {
         database.child(K.Database.usersChild).observeSingleEvent(of: .value, with: { snapshot in
-            if let users = snapshot.value as? [[String: String]] {
-                completion(users)
+            guard let value = snapshot.value as? [[String: String]] else {
+                completion(.failure(UsersError.failedToFetch))
+                return
             }
+            completion(.success(value))
         })
+    }
+    
+    public enum UsersError: Error{
+        case failedToFetch
     }
     
 }

@@ -104,7 +104,7 @@ struct K {
         static let emailAddress = "email_address"
         static let profilePicture = "profile_pictureURL"
         
-        static let nameField: "name"
-        static let emailField: "email"
+        static let nameField = "name"
+        static let emailField = "email"
     }
 }
