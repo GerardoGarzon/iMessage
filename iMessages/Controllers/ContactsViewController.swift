@@ -59,9 +59,25 @@ class ContactsViewController: UIViewController {
     
     @objc func didTapComposeButton() {
         let contactViewController = NewContactViewController()
+        
+        contactViewController.completion = { result in
+            self.createNewContact(with: result)
+        }
+        
         let newContactNavigationController = UINavigationController(rootViewController: contactViewController)
         
         present(newContactNavigationController, animated: true)
+    }
+    
+    func createNewContact(with result: [String: String]) {
+        if let email = result[K.Database.emailField], let userName = result[K.Database.nameField] {
+            print("Created")
+            let chatView = ChatViewController(with: email)
+            chatView.isNewChat = true
+            chatView.title = userName
+            chatView.navigationItem.largeTitleDisplayMode = .never
+            self.navigationController?.pushViewController(chatView, animated: true)
+        }
     }
 }
 
@@ -81,7 +97,7 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let chatView = ChatViewController()
+        let chatView = ChatViewController(with: "")
         chatView.title = "Gerardo Garzon"
         chatView.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(chatView, animated: true)

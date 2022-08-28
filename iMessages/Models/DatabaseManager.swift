@@ -91,3 +91,23 @@ final class DatabaseManager {
     }
     
 }
+
+// MARK: - Messages managment extension database
+
+extension DatabaseManager {
+    public func createNewChatWith(with user: String, firstMessage: Message, completion: @escaping (Bool) -> (Void)) {
+        
+    }
+    
+    public func getAllChats(for email: String, completion: @escaping (Result<String, Error> ) -> (Void)) {
+        
+    }
+    
+    public func getAllMessagesForChar(with id: String, completion: @escaping (Result<String, Error>) -> (Void)) {
+        
+    }
+    
+    public func sendMessage(with message: Message, to conversation: String, completion: @escaping (Bool) -> (Void)) {
+        
+    }
+}

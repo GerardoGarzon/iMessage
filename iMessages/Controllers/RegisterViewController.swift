@@ -325,7 +325,7 @@ extension RegisterViewController {
                                 })
                             }
                         })
-                        
+                        UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
                         strongSelf.navigationController?.dismiss(animated: true, completion: nil)
                     }
                 }

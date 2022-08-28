@@ -12,6 +12,8 @@ class NewContactViewController: UIViewController {
     
     private let spinner = JGProgressHUD(style: .dark)
     
+    public var completion: (([String: String]) -> (Void))?
+    
     private var usersList = [[String: String]]()
     private var results = [[String: String]]()
     private var isSearching = false
@@ -78,6 +80,7 @@ extension NewContactViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.count >= 2 && !isSearching{
+            self.spinner.show(in: view)
             isSearching = true
             
             self.searchUsers(query: searchText)
@@ -100,11 +103,18 @@ extension NewContactViewController: UISearchBarDelegate {
     }
     
     func filterUsers(with regex: String) {
+        guard let user = UserDefaults.standard.value(forKey: K.Database.emailAddress), let emailUser = user as? String else {
+            return
+        }
+        
+        let safeEmail = ChatUser.getSafeEmail(with: emailUser)
+        
         let results: [[String: String]] = self.usersList.filter({
-            guard let name = $0["name"]?.lowercased() as? String else {
+            guard let name = $0[K.Database.nameField]?.lowercased() as? String,
+                  let email = $0[K.Database.emailField] else {
                 return false
             }
-            return name.contains(regex.lowercased())
+            return name.contains(regex.lowercased()) && email != safeEmail
         })
         
         self.results = results
@@ -120,6 +130,7 @@ extension NewContactViewController: UISearchBarDelegate {
             self.friendsTableView.isHidden = false
             self.friendsTableView.reloadData()
         }
+        self.spinner.dismiss()
         self.isSearching = false
     }
 }
@@ -133,8 +144,16 @@ extension NewContactViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: K.ContactsView.NewContact.cellIdentifier, for: indexPath)
-        cell.textLabel?.text = results[indexPath.row]["name"]
+        cell.textLabel?.text = results[indexPath.row][K.Database.nameField]
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        self.dismissSelf()
+        if let handler = completion {
+            handler(self.results[indexPath.row])
+        }
     }
     
     

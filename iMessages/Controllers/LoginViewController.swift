@@ -77,15 +77,6 @@ class LoginViewController: UIViewController {
         return button
     }()
     
-    private let orButton: UILabel = {
-        let label = UILabel()
-        label.text = K.LoginView.OtherLogin.orLabel
-        label.textAlignment = .center
-        label.textColor = .gray
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        return label
-    }()
-    
     private let facebookSingInButton: FBLoginButton = {
         let button = FBLoginButton()
         button.permissions = [K.LoginView.FacebookLogin.profilePermission, K.LoginView.FacebookLogin.emailPermission]
@@ -121,7 +112,6 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(emailTextField)
         scrollView.addSubview(passwordTextField)
         scrollView.addSubview(loginButton)
-        scrollView.addSubview(orButton)
         scrollView.addSubview(facebookSingInButton)
         scrollView.addSubview(googleSingInButton)
         
@@ -155,12 +145,8 @@ class LoginViewController: UIViewController {
                                    y: passwordTextField.bottom + 20,
                                    width: scrollView.right - 60,
                                    height: 50)
-        orButton.frame = CGRect(x: 30,
-                                y: loginButton.bottom + 20,
-                                width: scrollView.right - 60,
-                                height: 50)
         facebookSingInButton.frame = CGRect(x: 30,
-                                            y: orButton.bottom + 20,
+                                            y: loginButton.bottom + 20,
                                             width: scrollView.right - 60,
                                             height: 50)
         googleSingInButton.frame = CGRect(x: 30,
