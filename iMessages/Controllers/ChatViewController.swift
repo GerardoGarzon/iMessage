@@ -71,7 +71,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
                               kind: .text(text))
         
         if isNewChat {
-            DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, firstMessage: message, completion: { [weak self] success in
+            DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success in
                 guard let strongSelf = self else {
                     return
                 }
@@ -85,12 +85,14 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
     }
     
     private func createMessageID() -> String? {
-        guard let currentUser = UserDefaults.standard.value(forKey: K.Database.emailAddress) else {
+        guard let currentUser = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String else {
             return nil
         }
         
+        let safeEmail = ChatUser.getSafeEmail(with: currentUser)
+        
         let dateString = Self.dateFormatter.string(from: Date())
-        let newIdentifier = "\(self.receiverEmailUser)_\(currentUser)_\(dateString)"
+        let newIdentifier = "\(self.receiverEmailUser)_\(safeEmail)_\(dateString)"
         
         return newIdentifier
     }
