@@ -28,6 +28,9 @@
 		F7D25C6A28B514D7005ECBD8 /* ChatUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D25C6928B514D7005ECBD8 /* ChatUser.swift */; };
 		F7D25C6C28B51B2E005ECBD8 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D25C6B28B51B2E005ECBD8 /* AlertManager.swift */; };
 		F7D25C6E28B53CE1005ECBD8 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D25C6D28B53CE1005ECBD8 /* ProfileViewController.swift */; };
+		F7E48B4A28BD242700D7F77E /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E48B4928BD242700D7F77E /* ContactTableViewCell.swift */; };
+		F7E48B4C28BD29C700D7F77E /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E48B4B28BD29C700D7F77E /* Contact.swift */; };
+		F7E48B4E28BD2A1A00D7F77E /* LatestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E48B4D28BD2A1A00D7F77E /* LatestMessage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +60,9 @@
 		F7D25C6928B514D7005ECBD8 /* ChatUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUser.swift; sourceTree = "<group>"; };
 		F7D25C6B28B51B2E005ECBD8 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		F7D25C6D28B53CE1005ECBD8 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		F7E48B4928BD242700D7F77E /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
+		F7E48B4B28BD29C700D7F77E /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
+		F7E48B4D28BD2A1A00D7F77E /* LatestMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +135,7 @@
 			children = (
 				F72FBDAE28B06FD200113F29 /* Main.storyboard */,
 				F72FBDB328B06FD500113F29 /* LaunchScreen.storyboard */,
+				F7E48B4928BD242700D7F77E /* ContactTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -142,6 +149,8 @@
 				F7B9F63928B5794700F77513 /* Message.swift */,
 				F7B9F63B28B579B100F77513 /* Sender.swift */,
 				F77C8BF928B5A7FF0081F493 /* StorageManager.swift */,
+				F7E48B4B28BD29C700D7F77E /* Contact.swift */,
+				F7E48B4D28BD2A1A00D7F77E /* LatestMessage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -275,6 +284,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7E48B4C28BD29C700D7F77E /* Contact.swift in Sources */,
 				F72FBDAD28B06FD200113F29 /* ContactsViewController.swift in Sources */,
 				F7B9F63E28B57ECD00F77513 /* NewContactViewController.swift in Sources */,
 				F7D25C6C28B51B2E005ECBD8 /* AlertManager.swift in Sources */,
@@ -291,6 +301,8 @@
 				F7A8B31128B0BEF30065A94E /* Constants.swift in Sources */,
 				F760345328B466950055FB24 /* DatabaseManager.swift in Sources */,
 				F77C8BFA28B5A7FF0081F493 /* StorageManager.swift in Sources */,
+				F7E48B4E28BD2A1A00D7F77E /* LatestMessage.swift in Sources */,
+				F7E48B4A28BD242700D7F77E /* ContactTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -40,4 +40,29 @@ extension MessageKind {
             return "custom"
         }
     }
+    
+    var messageContent: String? {
+        switch self {
+        case .text(let text):
+            return text
+        case .attributedText(_):
+            return nil
+        case .photo(_):
+            return nil
+        case .video(_):
+            return nil
+        case .location(_):
+            return nil
+        case .emoji(_):
+            return nil
+        case .audio(_):
+            return nil
+        case .contact(_):
+            return nil
+        case .linkPreview(_):
+            return nil
+        case .custom(_):
+            return nil
+        }
+    }
 }

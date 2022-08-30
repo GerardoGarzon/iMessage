@@ -10,11 +10,14 @@ import FirebaseAuth
 
 class ContactsViewController: UIViewController {
     
+    private var conversations = [Contact]()
+    
     //MARK: - User interface elements
     
     private let contactsTable: UITableView = {
         let table = UITableView()
-        table.register(UITableViewCell.self, forCellReuseIdentifier: K.ContactsView.TableView.cellIdentifier)
+        table.register(ContactTableViewCell.self,
+                       forCellReuseIdentifier: ContactTableViewCell.identifier)
         //table.isHidden = true
         return table
     }()
@@ -42,6 +45,8 @@ class ContactsViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(contactsTable)
         view.addSubview(labelNoConversations)
+        
+        listenForConversations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -71,13 +76,39 @@ class ContactsViewController: UIViewController {
     
     func createNewContact(with result: [String: String]) {
         if let email = result[K.Database.emailField], let userName = result[K.Database.nameField] {
-            print("Created")
-            let chatView = ChatViewController(with: email)
+            let chatView = ChatViewController(with: email, conversationID: nil)
             chatView.isNewChat = true
             chatView.title = userName
             chatView.navigationItem.largeTitleDisplayMode = .never
             self.navigationController?.pushViewController(chatView, animated: true)
         }
+    }
+    
+    func listenForConversations() {
+        guard let email = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String else {
+            return
+        }
+        
+        let safeEmail = ChatUser.getSafeEmail(with: email)
+        DatabaseManager.shared.getAllChats(for: safeEmail, completion: { [weak self] result in
+            guard let strongSelf = self else {
+                return
+            }
+            
+            switch result {
+            case .success(let conversations):
+                guard !conversations.isEmpty else {
+                    return
+                }
+                
+                strongSelf.conversations = conversations
+                DispatchQueue.main.async {
+                    strongSelf.contactsTable.reloadData()
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        })
     }
 }
 
@@ -85,22 +116,27 @@ class ContactsViewController: UIViewController {
 
 extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return conversations.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.ContactsView.TableView.cellIdentifier, for: indexPath)
-        cell.textLabel?.text = "Hello!"
-        cell.accessoryType = .disclosureIndicator
+        let model = conversations[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.identifier, for: indexPath) as! ContactTableViewCell
+        cell.configure(with: model)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let chatView = ChatViewController(with: "")
-        chatView.title = "Gerardo Garzon"
+        let model = conversations[indexPath.row]
+        let chatView = ChatViewController(with: model.userEmail, conversationID: model.id)
+        chatView.title = model.name
         chatView.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(chatView, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
     }
 }
 

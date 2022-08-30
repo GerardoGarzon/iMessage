@@ -220,6 +220,16 @@ extension LoginViewController {
                     style: .alert,
                     options: [UIAlertAction(title: K.RegisterView.RegisterAlert.action, style: .default)])
             } else {
+                DatabaseManager.shared.getUserInfo(with: email) { result in
+                    switch result {
+                    case .success(let info):
+                        if let firstName = info["first_name"], let lastName = info["last_name"] {
+                            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+                        }
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
                 UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
                 let contactsViewController = ContactsViewController()
                 contactsViewController.title = K.ContactsView.title
@@ -275,6 +285,7 @@ extension LoginViewController {
             let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
             
             UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
             
             strongSelf.createGoogleUser(with: credential, email, firstName, lastName, user)
         }
@@ -390,6 +401,8 @@ extension LoginViewController: LoginButtonDelegate {
                 return
             }
             UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+            
             let credential = FacebookAuthProvider.credential(withAccessToken: token)
             self.createFacebookUser(with: credential, email, firstName, lastName, downloadURL)
         })
