@@ -349,7 +349,58 @@ extension DatabaseManager {
             value.append(newMessage)
             
             self.database.child("\(conversationID)/messages").setValue(value)
+            
+            self.updateUserConversations(for: safeEmail, with: conversationID, message: newMessage) { success in
+                if !success {
+                    print("error")
+                }
+            }
+            self.updateUserConversations(for: receiverEmail, with: conversationID, message: newMessage) { success in
+                if !success {
+                    print("error")
+                }
+            }
+            
             completion(true)
+        }
+    }
+    
+    public func updateUserConversations(for user: String, with conversationID: String, message: [String: Any], completion: @escaping (Bool) -> (Void)) {
+        database.child("\(user)/conversations").observeSingleEvent(of: .value) { snapshot in
+            guard var value = snapshot.value as? [[String: Any]] else {
+                completion(false)
+                return
+            }
+            var count = 0
+            for conversation in value {
+                if let id = conversation["id"] as? String, id == conversationID {
+                    break
+                }
+                count += 1
+            }
+            
+            guard let date = message["date"] as? String,
+                  let text = message["content"] as? String,
+                  let receiver_user = value[count]["receiver_user"] as? String,
+                  let name = value[count]["name"] as? String else {
+                completion(false)
+                return
+            }
+            
+            value[count] = [
+                "id": conversationID,
+                "receiver_user": receiver_user,
+                "name": name,
+                "latest_message": [
+                    "date": date,
+                    "is_read": false,
+                    "message": text
+                ]
+            ]
+            
+            self.database.child("\(user)/conversations").setValue(value)
+            completion(true)
+            
         }
     }
 }

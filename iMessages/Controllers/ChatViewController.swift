@@ -100,10 +100,15 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
                               kind: .text(text))
         
         if isNewChat {
-            self.listenForMessages(shouldScrollToBottom: true)
-            DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { success, id in
+            DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success, id in
+                guard let strongSelf = self else {
+                    return
+                }
                 if success {
-                    self.conversationID = id
+                    DispatchQueue.main.async {
+                        strongSelf.conversationID = id
+                        strongSelf.listenForMessages(shouldScrollToBottom: true)
+                    }
                 } else {
                     print("Error")
                 }

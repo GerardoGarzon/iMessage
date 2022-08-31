@@ -14,9 +14,21 @@ import GoogleSignIn
 import GoogleUtilities
 import GoogleDataTransport
 import FBSDKCoreKit
+import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    private func setupRequestNotificationAuth(application: UIApplication) {
+        let center = UNUserNotificationCenter.current()
+        let options: UNAuthorizationOptions = [.alert, .sound, .badge]
+        
+        center.requestAuthorization(options: options) { granted, error in
+            if let err = error {
+                print(err.localizedDescription)
+            }
+        }
+    }
     
     
     
@@ -32,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             application,
             didFinishLaunchingWithOptions: launchOptions
         )
+        
+        setupRequestNotificationAuth(application: application)
         
         return true
     }

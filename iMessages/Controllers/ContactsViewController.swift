@@ -11,6 +11,8 @@ import FirebaseAuth
 class ContactsViewController: UIViewController {
     
     private var conversations = [Contact]()
+    private let notificationManager = NotificationManager()
+    
     
     //MARK: - User interface elements
     
@@ -103,7 +105,10 @@ class ContactsViewController: UIViewController {
                 
                 strongSelf.conversations = conversations
                 DispatchQueue.main.async {
+                    print("NewMessage")
                     strongSelf.contactsTable.reloadData()
+                    // TODO: Notifications are not shown with the app open
+                    // strongSelf.notificationManager.createNotification(title: "Messages", body: "New Message")
                 }
             case .failure(let error):
                 print(error.localizedDescription)
