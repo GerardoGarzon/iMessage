@@ -326,6 +326,8 @@ extension RegisterViewController {
                             }
                         })
                         UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+                        UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+                        
                         strongSelf.navigationController?.dismiss(animated: true, completion: nil)
                     }
                 }
