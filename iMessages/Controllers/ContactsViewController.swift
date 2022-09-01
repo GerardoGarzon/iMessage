@@ -57,6 +57,8 @@ class ContactsViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(contactsTable)
         view.addSubview(labelNoConversations)
+        
+        listenForConversations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
