@@ -403,4 +403,31 @@ extension DatabaseManager {
             
         }
     }
+    
+    public func conversationExist(for sender: String, with otherUser: String, completion: @escaping (Result<String, Error>) -> (Void)) {
+        database.child("\(sender)/conversations").observeSingleEvent(of: .value) { snapshot in
+            guard let value = snapshot.value as? [[String: Any]] else {
+                completion(.failure(UsersError.failedToFetch))
+                return
+            }
+            let conversation: [String] = value.compactMap { element in
+                guard let user = element["receiver_user"] as? String,
+                    let id = element["id"] as? String else {
+                    return nil
+                }
+                
+                if user == otherUser {
+                    return id
+                } else {
+                    return nil
+                }
+            }
+            
+            if conversation.isEmpty {
+                completion(.failure(UsersError.failedToFetch))
+            } else {
+                completion(.success(conversation[0]))
+            }
+        }
+    }
 }

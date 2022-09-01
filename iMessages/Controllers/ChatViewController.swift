@@ -59,6 +59,22 @@ class ChatViewController: MessagesViewController {
         messageInputBar.inputTextView.becomeFirstResponder()
         if self.conversationID != "" {
             listenForMessages(shouldScrollToBottom: true)
+        } else {
+            guard let sender = selfSender?.senderId else {
+                return
+            }
+            print(sender, self.receiverEmailUser)
+            DatabaseManager.shared.conversationExist(for: sender, with: self.receiverEmailUser) { result in
+                switch result {
+                case .failure(_):
+                    return
+                case .success(let conversationID):
+                    DispatchQueue.main.async {
+                        self.conversationID = conversationID
+                        self.listenForMessages(shouldScrollToBottom: true)
+                    }
+                }
+            }
         }
     }
     

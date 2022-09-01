@@ -116,7 +116,6 @@ extension NewContactViewController: UISearchBarDelegate {
             }
             return name.contains(regex.lowercased()) && email != safeEmail
         })
-        print(results)
         self.results = results
         self.updateUI()
     }
