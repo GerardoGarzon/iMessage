@@ -27,7 +27,7 @@ class NewContactViewController: UIViewController {
     private let friendsTableView: UITableView = {
         let tableView = UITableView()
         tableView.isHidden = true
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: K.ContactsView.NewContact.cellIdentifier)
+        tableView.register(NewContactViewCell.self, forCellReuseIdentifier: NewContactViewCell.identifier)
         return tableView
     }()
     
@@ -116,7 +116,7 @@ extension NewContactViewController: UISearchBarDelegate {
             }
             return name.contains(regex.lowercased()) && email != safeEmail
         })
-        
+        print(results)
         self.results = results
         self.updateUI()
     }
@@ -143,8 +143,13 @@ extension NewContactViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: K.ContactsView.NewContact.cellIdentifier, for: indexPath)
-        cell.textLabel?.text = results[indexPath.row][K.Database.nameField]
+        let cell = tableView.dequeueReusableCell(withIdentifier: NewContactViewCell.identifier, for: indexPath) as! NewContactViewCell
+        
+        guard let email = self.results[indexPath.row]["email"], let name = self.results[indexPath.row]["name"] else {
+            return cell
+        }
+        cell.accessoryType = .disclosureIndicator
+        cell.configure(email: email, displayedName: name)
         return cell
     }
     
@@ -154,6 +159,10 @@ extension NewContactViewController: UITableViewDelegate, UITableViewDataSource {
         if let handler = completion {
             handler(self.results[indexPath.row])
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
     
     

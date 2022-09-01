@@ -17,6 +17,8 @@ class LoginViewController: UIViewController {
     
     private let spinner = JGProgressHUD(style: .dark)
     
+    private var loginObserver: NSObjectProtocol?
+    
     private let scrollView: UIScrollView = {
         let scroll = UIScrollView()
         scroll.clipsToBounds = true
@@ -98,6 +100,11 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.tabBarController?.selectedIndex = 0
+        
+        UserDefaults.standard.removeObject(forKey: K.Database.emailAddress)
+        UserDefaults.standard.removeObject(forKey: K.Database.displayedName)
+        
         view.backgroundColor = .white
         
         // Navigation bar items
@@ -175,6 +182,10 @@ class LoginViewController: UIViewController {
         
         loginUser(email, password)
     }
+    
+    public static func createLoginObserver() {
+        NotificationCenter.default.post(name: .didLoginInNotification, object: nil)
+    }
 }
 
 // MARK: - Text field delegate extension
@@ -220,9 +231,18 @@ extension LoginViewController {
                     style: .alert,
                     options: [UIAlertAction(title: K.RegisterView.RegisterAlert.action, style: .default)])
             } else {
+                DatabaseManager.shared.getUserInfo(with: email) { result in
+                    switch result {
+                    case .success(let info):
+                        if let firstName = info["first_name"], let lastName = info["last_name"] {
+                            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+                        }
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
                 UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
-                let contactsViewController = ContactsViewController()
-                contactsViewController.title = K.ContactsView.title
+                LoginViewController.createLoginObserver()
                 strongSelf.navigationController?.dismiss(animated: true, completion: nil)
             }
         }
@@ -275,6 +295,7 @@ extension LoginViewController {
             let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
             
             UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
             
             strongSelf.createGoogleUser(with: credential, email, firstName, lastName, user)
         }
@@ -349,6 +370,7 @@ extension LoginViewController {
                 DispatchQueue.main.async {
                     strongSelf.spinner.dismiss()
                 }
+                LoginViewController.createLoginObserver()
                 strongSelf.navigationController?.dismiss(animated: true, completion: nil)
             })
         })
@@ -390,6 +412,8 @@ extension LoginViewController: LoginButtonDelegate {
                 return
             }
             UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+            UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+            
             let credential = FacebookAuthProvider.credential(withAccessToken: token)
             self.createFacebookUser(with: credential, email, firstName, lastName, downloadURL)
         })
@@ -450,7 +474,7 @@ extension LoginViewController: LoginButtonDelegate {
                 DispatchQueue.main.async {
                     strongSelf.spinner.dismiss()
                 }
-                
+                LoginViewController.createLoginObserver()
                 strongSelf.navigationController?.dismiss(animated: true, completion: nil)
             })
         })
@@ -466,6 +490,4 @@ extension LoginViewController: LoginButtonDelegate {
             self.spinner.dismiss()
         }
     }
-    
-    
 }

@@ -116,6 +116,9 @@ class RegisterViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        UserDefaults.standard.removeObject(forKey: K.Database.emailAddress)
+        UserDefaults.standard.removeObject(forKey: K.Database.displayedName)
+        
         view.backgroundColor = .white
         // Navigation bar items
         self.title = K.RegisterView.title
@@ -326,6 +329,9 @@ extension RegisterViewController {
                             }
                         })
                         UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+                        UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+                        LoginViewController.createLoginObserver()
+                        
                         strongSelf.navigationController?.dismiss(animated: true, completion: nil)
                     }
                 }
