@@ -17,6 +17,7 @@
 		F7769EA928B1ADD4008A4C11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7769EA828B1ADD4008A4C11 /* Assets.xcassets */; };
 		F77C8BFA28B5A7FF0081F493 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77C8BF928B5A7FF0081F493 /* StorageManager.swift */; };
 		F7A616F328BF2BB100C62BE5 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */; };
+		F7A616F528BFC4FA00C62BE5 /* NewContactViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A616F428BFC4FA00C62BE5 /* NewContactViewCell.swift */; };
 		F7A8B30128B07CB60065A94E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7A8B30028B07CB60065A94E /* GoogleService-Info.plist */; };
 		F7A8B30728B0825C0065A94E /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8B30628B0825C0065A94E /* ChatViewController.swift */; };
 		F7A8B30928B082750065A94E /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8B30828B082750065A94E /* LoginViewController.swift */; };
@@ -50,6 +51,7 @@
 		F7769EA828B1ADD4008A4C11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F77C8BF928B5A7FF0081F493 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		F7A616F428BFC4FA00C62BE5 /* NewContactViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewContactViewCell.swift; sourceTree = "<group>"; };
 		F7A8B30028B07CB60065A94E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F7A8B30628B0825C0065A94E /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		F7A8B30828B082750065A94E /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -96,6 +98,17 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		F7123CD428C1150B00C04A93 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F760345228B466940055FB24 /* DatabaseManager.swift */,
+				F7D25C6B28B51B2E005ECBD8 /* AlertManager.swift */,
+				F77C8BF928B5A7FF0081F493 /* StorageManager.swift */,
+				F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		F72FBD9C28B06FD200113F29 = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +130,7 @@
 		F72FBDA728B06FD200113F29 /* iMessages */ = {
 			isa = PBXGroup;
 			children = (
+				F7123CD428C1150B00C04A93 /* Resources */,
 				F75722D228B6AC3F005CAC3F /* iMessages.entitlements */,
 				F7A8B2FF28B070810065A94E /* Controllers */,
 				F7A8B2FE28B070770065A94E /* Models */,
@@ -138,6 +152,7 @@
 				F72FBDAE28B06FD200113F29 /* Main.storyboard */,
 				F72FBDB328B06FD500113F29 /* LaunchScreen.storyboard */,
 				F7E48B4928BD242700D7F77E /* ContactTableViewCell.swift */,
+				F7A616F428BFC4FA00C62BE5 /* NewContactViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -146,14 +161,10 @@
 			isa = PBXGroup;
 			children = (
 				F7D25C6928B514D7005ECBD8 /* ChatUser.swift */,
-				F760345228B466940055FB24 /* DatabaseManager.swift */,
-				F7D25C6B28B51B2E005ECBD8 /* AlertManager.swift */,
 				F7B9F63928B5794700F77513 /* Message.swift */,
 				F7B9F63B28B579B100F77513 /* Sender.swift */,
-				F77C8BF928B5A7FF0081F493 /* StorageManager.swift */,
 				F7E48B4B28BD29C700D7F77E /* Contact.swift */,
 				F7E48B4D28BD2A1A00D7F77E /* LatestMessage.swift */,
-				F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -299,6 +310,7 @@
 				F7D25C6E28B53CE1005ECBD8 /* ProfileViewController.swift in Sources */,
 				F7A8B30B28B0827D0065A94E /* RegisterViewController.swift in Sources */,
 				F7B9F63C28B579B100F77513 /* Sender.swift in Sources */,
+				F7A616F528BFC4FA00C62BE5 /* NewContactViewCell.swift in Sources */,
 				F7A8B30928B082750065A94E /* LoginViewController.swift in Sources */,
 				F7B9F63A28B5794700F77513 /* Message.swift in Sources */,
 				F72FBDAB28B06FD200113F29 /* SceneDelegate.swift in Sources */,

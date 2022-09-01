@@ -50,6 +50,7 @@ class ChatViewController: MessagesViewController {
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
+        
         messageInputBar.delegate = self
     }
     
@@ -76,10 +77,7 @@ class ChatViewController: MessagesViewController {
                 strongSelf.messages = messages
                 DispatchQueue.main.async {
                     strongSelf.messagesCollectionView.reloadDataAndKeepOffset()
-                    
-                    if shouldScrollToBottom {
-                        strongSelf.messagesCollectionView.scrollToLastItem()
-                    }
+                    strongSelf.messagesCollectionView.scrollToLastItem(animated: false)
                 }
             case .failure(let error):
                 print(error.localizedDescription)
@@ -157,5 +155,8 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
         return messages.count
     }
     
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        
+    }
     
 }

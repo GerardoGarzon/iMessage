@@ -19,19 +19,6 @@ import UserNotifications
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    private func setupRequestNotificationAuth(application: UIApplication) {
-        let center = UNUserNotificationCenter.current()
-        let options: UNAuthorizationOptions = [.alert, .sound, .badge]
-        
-        center.requestAuthorization(options: options) { granted, error in
-            if let err = error {
-                print(err.localizedDescription)
-            }
-        }
-    }
-    
-    
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
@@ -44,8 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             application,
             didFinishLaunchingWithOptions: launchOptions
         )
-        
-        setupRequestNotificationAuth(application: application)
         
         return true
     }

@@ -59,3 +59,7 @@ extension UITextField {
     }
     
 }
+
+extension Notification.Name {
+    static let didLoginInNotification = Notification.Name("didLoginInNotification")
+}

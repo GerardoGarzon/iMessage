@@ -10,7 +10,7 @@ import FirebaseAuth
 
 class ContactsViewController: UIViewController {
     
-    private var conversations = [Contact]()
+    private var conversations: [Contact] = []
     private let notificationManager = NotificationManager()
     
     
@@ -20,7 +20,7 @@ class ContactsViewController: UIViewController {
         let table = UITableView()
         table.register(ContactTableViewCell.self,
                        forCellReuseIdentifier: ContactTableViewCell.identifier)
-        //table.isHidden = true
+        table.isHidden = true
         return table
     }()
     
@@ -40,9 +40,19 @@ class ContactsViewController: UIViewController {
         contactsTable.delegate = self
         contactsTable.dataSource = self
         
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose,
                                                             target: self,
                                                             action: #selector(didTapComposeButton))
+        
+        if let tabBarItem1 = self.tabBarController?.tabBar.items?[0] {
+            tabBarItem1.image = UIImage(systemName: "message")
+            tabBarItem1.selectedImage = UIImage(systemName: "message.fill")
+        }
+        if let tabBarItem2 = self.tabBarController?.tabBar.items?[1] {
+            tabBarItem2.image = UIImage(systemName: "person")
+            tabBarItem2.selectedImage = UIImage(systemName: "person.fill")
+        }
         
         view.backgroundColor = .white
         view.addSubview(contactsTable)
@@ -55,6 +65,7 @@ class ContactsViewController: UIViewController {
         super.viewWillAppear(animated)
         
         validateAuth()
+        listenForConversations()
     }
     
     override func viewDidLayoutSubviews() {
@@ -62,6 +73,16 @@ class ContactsViewController: UIViewController {
         
         contactsTable.frame = view.bounds
         labelNoConversations.frame = view.bounds
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if UserDefaults.standard.value(forKey: "login") != nil {
+            self.clearData()
+            self.listenForConversations()
+            UserDefaults.standard.removeObject(forKey: "login")
+        }
     }
     
     @objc func didTapComposeButton() {
@@ -105,15 +126,25 @@ class ContactsViewController: UIViewController {
                 
                 strongSelf.conversations = conversations
                 DispatchQueue.main.async {
-                    print("NewMessage")
+                    if !strongSelf.conversations.isEmpty {
+                        strongSelf.contactsTable.isHidden = false
+                        strongSelf.labelNoConversations.isHidden = true
+                    }
                     strongSelf.contactsTable.reloadData()
                     // TODO: Notifications are not shown with the app open
                     // strongSelf.notificationManager.createNotification(title: "Messages", body: "New Message")
                 }
             case .failure(let error):
+                strongSelf.contactsTable.isHidden = true
+                strongSelf.labelNoConversations.isHidden = false
                 print(error.localizedDescription)
             }
         })
+    }
+    
+    func clearData() {
+        self.conversations.removeAll()
+        self.contactsTable.reloadData()
     }
 }
 
@@ -141,7 +172,7 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return 90
     }
 }
 

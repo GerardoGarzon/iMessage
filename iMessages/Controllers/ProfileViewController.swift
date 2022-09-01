@@ -13,6 +13,7 @@ import FBSDKLoginKit
 
 class ProfileViewController: UIViewController {
     private let progressSpinner = JGProgressHUD(style: .dark)
+    private var loginObserver: NSObjectProtocol?
     
     @IBOutlet weak var profileConfigurations: UITableView!
     private let data = ["Log Out"]
@@ -20,10 +21,27 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loginObserver = NotificationCenter.default.addObserver(forName: .didLoginInNotification, object: nil, queue: .main, using: { [weak self] notification in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.createObserver()
+            strongSelf.profileConfigurations.tableHeaderView = strongSelf.createHeader()
+            strongSelf.tabBarController?.selectedIndex = 0
+        })
+        
         profileConfigurations.register(UITableViewCell.self, forCellReuseIdentifier: K.ProfileView.TableView.cellIdentifier)
         profileConfigurations.dataSource = self
         profileConfigurations.delegate = self
         profileConfigurations.tableHeaderView = createHeader()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    func createObserver() {
+        UserDefaults.standard.set("login", forKey: "login")
     }
 }
 
@@ -132,7 +150,8 @@ extension ProfileViewController {
             let navigationController = UINavigationController(rootViewController: loginViewController)
             navigationController.modalPresentationStyle = .fullScreen
             
-            UserDefaults.standard.setValue(nil, forKey: K.Database.emailAddress)
+            UserDefaults.standard.removeObject(forKey: K.Database.emailAddress)
+            UserDefaults.standard.removeObject(forKey: K.Database.displayedName)
             
             present(navigationController, animated: true)
             
