@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C9A5024ABCFFF5B27F0E8D8A /* Pods_iMessages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4361F2014867DE62001257DD /* Pods_iMessages.framework */; };
-		F725386928C2B38D0072FC31 /* LocalStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F725386828C2B38D0072FC31 /* LocalStorageManager.swift */; };
 		F72FBDA928B06FD200113F29 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FBDA828B06FD200113F29 /* AppDelegate.swift */; };
 		F72FBDAB28B06FD200113F29 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FBDAA28B06FD200113F29 /* SceneDelegate.swift */; };
 		F72FBDAD28B06FD200113F29 /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72FBDAC28B06FD200113F29 /* ContactsViewController.swift */; };
@@ -40,7 +39,6 @@
 		4361F2014867DE62001257DD /* Pods_iMessages.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iMessages.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E3ED90AC2A26016E7C834B8 /* Pods-iMessages.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iMessages.release.xcconfig"; path = "Target Support Files/Pods-iMessages/Pods-iMessages.release.xcconfig"; sourceTree = "<group>"; };
 		AEB47ED1B006F9F3A9448409 /* Pods-iMessages.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iMessages.debug.xcconfig"; path = "Target Support Files/Pods-iMessages/Pods-iMessages.debug.xcconfig"; sourceTree = "<group>"; };
-		F725386828C2B38D0072FC31 /* LocalStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageManager.swift; sourceTree = "<group>"; };
 		F72FBDA528B06FD200113F29 /* iMessages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iMessages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F72FBDA828B06FD200113F29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F72FBDAA28B06FD200113F29 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,7 +105,6 @@
 				F7D25C6B28B51B2E005ECBD8 /* AlertManager.swift */,
 				F77C8BF928B5A7FF0081F493 /* StorageManager.swift */,
 				F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */,
-				F725386828C2B38D0072FC31 /* LocalStorageManager.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -314,7 +311,6 @@
 				F7A8B30B28B0827D0065A94E /* RegisterViewController.swift in Sources */,
 				F7B9F63C28B579B100F77513 /* Sender.swift in Sources */,
 				F7A616F528BFC4FA00C62BE5 /* NewContactViewCell.swift in Sources */,
-				F725386928C2B38D0072FC31 /* LocalStorageManager.swift in Sources */,
 				F7A8B30928B082750065A94E /* LoginViewController.swift in Sources */,
 				F7B9F63A28B5794700F77513 /* Message.swift in Sources */,
 				F72FBDAB28B06FD200113F29 /* SceneDelegate.swift in Sources */,

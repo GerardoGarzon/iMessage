@@ -15,5 +15,4 @@ target 'iMessages' do
   
   pod 'JGProgressHUD'
   pod 'MessageKit'
-  pod 'RealmSwift'
 end
