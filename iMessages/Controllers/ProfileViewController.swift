@@ -16,7 +16,7 @@ class ProfileViewController: UIViewController {
     private var loginObserver: NSObjectProtocol?
     
     @IBOutlet weak var profileConfigurations: UITableView!
-    private let data = ["Log Out"]
+    private var data = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +30,9 @@ class ProfileViewController: UIViewController {
             strongSelf.tabBarController?.selectedIndex = 0
         })
         
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        
+        profileConfigurations.separatorStyle = .none
         profileConfigurations.register(UITableViewCell.self, forCellReuseIdentifier: K.ProfileView.TableView.cellIdentifier)
         profileConfigurations.dataSource = self
         profileConfigurations.delegate = self
@@ -84,6 +87,12 @@ extension ProfileViewController {
         })
         
         headerView.addSubview(profileImageView)
+        data.append("\(UserDefaults.standard.value(forKey: K.Database.displayedName) ?? "Name")")
+        data.append("\(UserDefaults.standard.value(forKey: K.Database.emailAddress) ?? "Email")")
+        data.append("")
+        data.append("Log Out")
+        profileConfigurations.reloadData()
+        profileConfigurations.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         return headerView
     }
     
@@ -111,15 +120,25 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: K.ProfileView.TableView.cellIdentifier, for: indexPath)
+        if indexPath.row == 3 {
+            cell.textLabel?.textColor = UIColor(named: K.Colors.secondaryColor)
+            cell.textLabel?.font = .systemFont(ofSize: 15, weight: .regular)
+        } else {
+            cell.textLabel?.textColor = UIColor(named: K.Colors.textColor)
+            cell.textLabel?.font = .systemFont(ofSize: 18, weight: .regular)
+            cell.selectionStyle = .none
+        }
+        cell.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         cell.textLabel?.text = data[indexPath.row]
         cell.textLabel?.textAlignment = .center
-        cell.textLabel?.textColor = .black
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        logOutPressed()
+        if indexPath.row == 3 {
+            logOutPressed()
+        }
     }
 }
 
@@ -152,6 +171,9 @@ extension ProfileViewController {
             
             UserDefaults.standard.removeObject(forKey: K.Database.emailAddress)
             UserDefaults.standard.removeObject(forKey: K.Database.displayedName)
+            
+            self.data = []
+            self.profileConfigurations.reloadData()
             
             present(navigationController, animated: true)
             

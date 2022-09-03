@@ -46,6 +46,8 @@ class LoginViewController: UIViewController {
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 5))
         textField.leftViewMode = .always
         textField.placeholder = K.LoginView.emailPlaceHolder
+        textField.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        textField.tintColor = UIColor(named: K.Colors.textColor)
         return textField
     }()
     
@@ -65,6 +67,8 @@ class LoginViewController: UIViewController {
         textField.leftViewMode = .always
         textField.placeholder = K.LoginView.passwordPlaceHolder
         textField.enablePasswordToggle()
+        textField.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        textField.tintColor = UIColor(named: K.Colors.textColor)
         return textField
     }()
     
@@ -105,7 +109,7 @@ class LoginViewController: UIViewController {
         UserDefaults.standard.removeObject(forKey: K.Database.emailAddress)
         UserDefaults.standard.removeObject(forKey: K.Database.displayedName)
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         // Navigation bar items
         self.title = K.LoginView.title
@@ -236,14 +240,14 @@ extension LoginViewController {
                     case .success(let info):
                         if let firstName = info["first_name"], let lastName = info["last_name"] {
                             UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
+                            UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
+                            LoginViewController.createLoginObserver()
+                            strongSelf.navigationController?.dismiss(animated: true, completion: nil)
                         }
                     case .failure(let error):
                         print(error.localizedDescription)
                     }
                 }
-                UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
-                LoginViewController.createLoginObserver()
-                strongSelf.navigationController?.dismiss(animated: true, completion: nil)
             }
         }
     }

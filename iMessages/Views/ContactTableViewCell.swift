@@ -21,6 +21,7 @@ class ContactTableViewCell: UITableViewCell {
     
     private let userName: UILabel = {
         let label = UILabel()
+        label.textColor = UIColor(named: K.Colors.textColor)
         label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
@@ -28,7 +29,7 @@ class ContactTableViewCell: UITableViewCell {
     private let userMessage: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .regular)
-        label.textColor = .darkGray
+        label.textColor = .secondaryLabel
         label.numberOfLines = 0
         return label
     }()
@@ -66,6 +67,9 @@ class ContactTableViewCell: UITableViewCell {
     public func configure(with model: Contact) {
         self.userName.text = model.name
         self.userMessage.text = model.lastMessage.text
+        self.userImageView.image = UIImage(systemName: K.RegisterView.userIcon)
+        self.userImageView.tintColor = .gray
+        self.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         let imagePath = "images/\(model.userEmail)_profile_picture.png"
         

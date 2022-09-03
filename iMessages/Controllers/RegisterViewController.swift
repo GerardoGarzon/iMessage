@@ -24,7 +24,7 @@ class RegisterViewController: UIViewController {
     private let imageIcon: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(systemName: K.RegisterView.userIcon)
-        image.tintColor = .gray
+        image.tintColor = .secondaryLabel
         image.contentMode = .scaleAspectFit
         image.layer.masksToBounds = true
         image.layer.borderWidth = 1
@@ -45,6 +45,8 @@ class RegisterViewController: UIViewController {
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 5))
         textField.leftViewMode = .always
         textField.placeholder = K.RegisterView.firstNamePlaceHolder
+        textField.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        textField.tintColor = UIColor(named: K.Colors.textColor)
         return textField
     }()
     
@@ -61,6 +63,8 @@ class RegisterViewController: UIViewController {
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 5))
         textField.leftViewMode = .always
         textField.placeholder = K.RegisterView.lastNamePlaceHolder
+        textField.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        textField.tintColor = UIColor(named: K.Colors.textColor)
         return textField
     }()
     
@@ -78,6 +82,8 @@ class RegisterViewController: UIViewController {
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 5))
         textField.leftViewMode = .always
         textField.placeholder = K.RegisterView.emailPlaceHolder
+        textField.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        textField.tintColor = UIColor(named: K.Colors.textColor)
         return textField
     }()
     
@@ -97,6 +103,8 @@ class RegisterViewController: UIViewController {
         textField.leftViewMode = .always
         textField.placeholder = K.RegisterView.passwordPlaceHolder
         textField.enablePasswordToggle()
+        textField.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        textField.tintColor = UIColor(named: K.Colors.textColor)
         return textField
     }()
     
@@ -119,7 +127,7 @@ class RegisterViewController: UIViewController {
         UserDefaults.standard.removeObject(forKey: K.Database.emailAddress)
         UserDefaults.standard.removeObject(forKey: K.Database.displayedName)
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         // Navigation bar items
         self.title = K.RegisterView.title
         
@@ -331,7 +339,6 @@ extension RegisterViewController {
                         UserDefaults.standard.set(email, forKey: K.Database.emailAddress)
                         UserDefaults.standard.set("\(firstName) \(lastName)", forKey: K.Database.displayedName)
                         LoginViewController.createLoginObserver()
-                        
                         strongSelf.navigationController?.dismiss(animated: true, completion: nil)
                     }
                 }

@@ -89,7 +89,8 @@ struct K {
     struct Colors {
         static let secondaryColor = "SecondaryColor"
         static let facebookColor = "FacebookColor"
-        
+        static let backgroundColor = "BackgroundColor"
+        static let textColor = "TextColor"
     }
     
     struct Extensions {

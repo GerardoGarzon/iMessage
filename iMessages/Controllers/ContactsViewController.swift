@@ -20,6 +20,7 @@ class ContactsViewController: UIViewController {
         let table = UITableView()
         table.register(ContactTableViewCell.self,
                        forCellReuseIdentifier: ContactTableViewCell.identifier)
+        table.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         table.isHidden = true
         return table
     }()
@@ -54,7 +55,7 @@ class ContactsViewController: UIViewController {
             tabBarItem2.selectedImage = UIImage(systemName: "person.fill")
         }
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         view.addSubview(contactsTable)
         view.addSubview(labelNoConversations)
         
@@ -139,6 +140,7 @@ class ContactsViewController: UIViewController {
                 strongSelf.labelNoConversations.isHidden = false
                 print(error.localizedDescription)
             }
+            strongSelf.contactsTable.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         })
     }
     

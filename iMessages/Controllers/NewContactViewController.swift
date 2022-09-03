@@ -44,7 +44,7 @@ class NewContactViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         navigationController?.navigationBar.topItem?.titleView = searchBar
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: K.ContactsView.NewContact.cancelButtonSearch,
                                                             style: .done,
@@ -55,6 +55,7 @@ class NewContactViewController: UIViewController {
         searchBar.delegate = self
         friendsTableView.delegate = self
         friendsTableView.dataSource = self
+        friendsTableView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         view.addSubview(friendsTableView)
         view.addSubview(noResultLabel)
@@ -131,6 +132,7 @@ extension NewContactViewController: UISearchBarDelegate {
         }
         self.spinner.dismiss()
         self.isSearching = false
+        self.friendsTableView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
     }
 }
 

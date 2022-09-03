@@ -22,6 +22,7 @@ class NewContactViewCell: UITableViewCell {
     private let userName: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.textColor = UIColor(named: K.Colors.textColor)
         return label
     }()
     
@@ -50,6 +51,9 @@ class NewContactViewCell: UITableViewCell {
     
     public func configure(email: String, displayedName: String) {
         self.userName.text = displayedName
+        self.userImageView.image = UIImage(systemName: K.RegisterView.userIcon)
+        self.userImageView.tintColor = .secondaryLabel
+        self.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         let imagePath = "images/\(email)_profile_picture.png"
         

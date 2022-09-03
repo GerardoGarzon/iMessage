@@ -45,7 +45,10 @@ class ChatViewController: MessagesViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        messagesCollectionView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        messageInputBar.backgroundView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        messageInputBar.tintColor = UIColor(named: K.Colors.textColor)
         
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
