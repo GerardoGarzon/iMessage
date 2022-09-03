@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         
         // Navbar configuration color
-        UINavigationBar.appearance().tintColor = UIColor(named: "SecondaryColor")
+        UINavigationBar.appearance().tintColor = UIColor(named: K.Colors.secondaryColor)
         
         // Facebook login
         ApplicationDelegate.shared.application(

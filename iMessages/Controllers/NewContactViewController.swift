@@ -10,13 +10,13 @@ import JGProgressHUD
 
 class NewContactViewController: UIViewController {
     
-    private let spinner = JGProgressHUD(style: .dark)
-    
     public var completion: (([String: String]) -> (Void))?
-    
+    private let spinner = JGProgressHUD(style: .dark)
     private var usersList = [[String: String]]()
     private var results = [[String: String]]()
     private var isSearching = false
+    
+    // MARK: - User interface elements
     
     private let searchBar: UISearchBar = {
         let search = UISearchBar()
@@ -165,6 +165,4 @@ extension NewContactViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
-    
-    
 }

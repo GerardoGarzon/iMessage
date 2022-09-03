@@ -11,7 +11,6 @@ import FirebaseAuth
 class ContactsViewController: UIViewController {
     
     private var conversations: [Contact] = []
-    private let notificationManager = NotificationManager()
     
     
     //MARK: - User interface elements
@@ -34,6 +33,8 @@ class ContactsViewController: UIViewController {
         label.isHidden = true
         return label
     }()
+    
+    // MARK: - Add subviews and delegates
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,8 +59,6 @@ class ContactsViewController: UIViewController {
         view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         view.addSubview(contactsTable)
         view.addSubview(labelNoConversations)
-        
-        listenForConversations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -97,7 +96,11 @@ class ContactsViewController: UIViewController {
         
         present(newContactNavigationController, animated: true)
     }
-    
+}
+
+// MARK: - Contacts managment
+
+extension ContactsViewController {
     func createNewContact(with result: [String: String]) {
         if let email = result[K.Database.emailField], let userName = result[K.Database.nameField] {
             let chatView = ChatViewController(with: email, conversationID: nil)
@@ -143,11 +146,6 @@ class ContactsViewController: UIViewController {
             strongSelf.contactsTable.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         })
     }
-    
-    func clearData() {
-        self.conversations.removeAll()
-        self.contactsTable.reloadData()
-    }
 }
 
 // MARK: - UITable delegate and data source implementation
@@ -175,6 +173,11 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90
+    }
+    
+    func clearData() {
+        self.conversations.removeAll()
+        self.contactsTable.reloadData()
     }
 }
 

@@ -16,7 +16,6 @@
 		F760345328B466950055FB24 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760345228B466940055FB24 /* DatabaseManager.swift */; };
 		F7769EA928B1ADD4008A4C11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7769EA828B1ADD4008A4C11 /* Assets.xcassets */; };
 		F77C8BFA28B5A7FF0081F493 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77C8BF928B5A7FF0081F493 /* StorageManager.swift */; };
-		F7A616F328BF2BB100C62BE5 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */; };
 		F7A616F528BFC4FA00C62BE5 /* NewContactViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A616F428BFC4FA00C62BE5 /* NewContactViewCell.swift */; };
 		F7A8B30128B07CB60065A94E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7A8B30028B07CB60065A94E /* GoogleService-Info.plist */; };
 		F7A8B30728B0825C0065A94E /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8B30628B0825C0065A94E /* ChatViewController.swift */; };
@@ -50,7 +49,6 @@
 		F760345228B466940055FB24 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		F7769EA828B1ADD4008A4C11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F77C8BF928B5A7FF0081F493 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
-		F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		F7A616F428BFC4FA00C62BE5 /* NewContactViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewContactViewCell.swift; sourceTree = "<group>"; };
 		F7A8B30028B07CB60065A94E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F7A8B30628B0825C0065A94E /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -104,7 +102,6 @@
 				F760345228B466940055FB24 /* DatabaseManager.swift */,
 				F7D25C6B28B51B2E005ECBD8 /* AlertManager.swift */,
 				F77C8BF928B5A7FF0081F493 /* StorageManager.swift */,
-				F7A616F228BF2BB100C62BE5 /* NotificationManager.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -300,7 +297,6 @@
 			files = (
 				F7E48B4C28BD29C700D7F77E /* Contact.swift in Sources */,
 				F72FBDAD28B06FD200113F29 /* ContactsViewController.swift in Sources */,
-				F7A616F328BF2BB100C62BE5 /* NotificationManager.swift in Sources */,
 				F7B9F63E28B57ECD00F77513 /* NewContactViewController.swift in Sources */,
 				F7D25C6C28B51B2E005ECBD8 /* AlertManager.swift in Sources */,
 				F7A8B30F28B0B9A30065A94E /* ViewExtensions.swift in Sources */,

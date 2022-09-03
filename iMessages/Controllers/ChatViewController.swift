@@ -7,18 +7,29 @@
 
 import UIKit
 import MessageKit
+import SDWebImage
 import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController {
+    
     public let receiverEmailUser: String
     public var conversationID: String
     private var messages = [Message]()
     public var isNewChat = false
     
+    // MARK: - User interface elements
+    
     public static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter
+    }()
+    
+    private let audiobutton: InputBarButtonItem = {
+        let button = InputBarButtonItem()
+        button.setImage(UIImage(systemName: "mic"), for: .normal)
+        button.tintColor = UIColor.gray
+        return button
     }()
     
     private let selfSender: Sender? = {
@@ -42,19 +53,21 @@ class ChatViewController: MessagesViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Delegates
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
-        messagesCollectionView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
-        messageInputBar.backgroundView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
-        messageInputBar.tintColor = UIColor(named: K.Colors.textColor)
+
         
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         
         messageInputBar.delegate = self
+        
+        configureInputTextView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -80,6 +93,90 @@ class ChatViewController: MessagesViewController {
             }
         }
     }
+}
+
+// MARK: - Chat input text view delegate methods
+
+extension ChatViewController: InputBarAccessoryViewDelegate {
+    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+        guard !text.replacingOccurrences(of: " ", with: "").isEmpty, let sender = selfSender, let messageID = createMessageID() else {
+            return
+        }
+        
+        let message = Message(sender: sender,
+                              messageId: messageID,
+                              sentDate: Date(),
+                              kind: .text(text))
+        
+        if isNewChat {
+            DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success, id in
+                guard let strongSelf = self else {
+                    return
+                }
+                if success {
+                    DispatchQueue.main.async {
+                        strongSelf.conversationID = id
+                        strongSelf.listenForMessages(shouldScrollToBottom: true)
+                    }
+                }
+            })
+            self.isNewChat = false
+        } else {
+            DatabaseManager.shared.sendMessage(with: message, to: self.conversationID, receiverEmail: self.receiverEmailUser, userName: self.title ?? "User") { _ in return}
+        }
+        self.messageInputBar.inputTextView.text = nil
+    }
+    
+    private func createMessageID() -> String? {
+        guard let currentUser = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String else {
+            return nil
+        }
+        
+        let safeEmail = ChatUser.getSafeEmail(with: currentUser)
+        
+        let dateString = Self.dateFormatter.string(from: Date())
+        let newIdentifier = "\(self.receiverEmailUser)_\(safeEmail)_\(dateString)"
+        
+        return newIdentifier
+    }
+    
+    func configureInputTextView() {
+        let sendButton = messageInputBar.sendButton
+        sendButton.title = ""
+        sendButton.image = UIImage(systemName: "paperplane.fill")
+        sendButton.tintColor = UIColor.gray
+        sendButton.setSize(CGSize(width: 30, height: 30), animated: false)
+        
+        let items = [sendButton, audiobutton]
+        
+        messagesCollectionView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        messageInputBar.backgroundView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
+        
+        audiobutton.setSize(CGSize(width: 30, height: 30), animated: false)
+        
+        messageInputBar.setStackViewItems(items, forStack: .right, animated: false)
+        messageInputBar.setRightStackViewWidthConstant(to: 62 , animated: false)
+    }
+}
+
+// MARK: - Messages managment
+
+extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
+    func currentSender() -> SenderType {
+        if let sender = selfSender {
+            return sender
+        } else {
+            return Sender(photoURL: "", senderId: "-1", displayName: "")
+        }
+    }
+    
+    func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
+        return messages[indexPath.section]
+    }
+    
+    func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
+        return messages.count
+    }
     
     func listenForMessages(shouldScrollToBottom: Bool) {
         DatabaseManager.shared.getAllMessagesForChar(with: self.conversationID) { [weak self] result in
@@ -103,79 +200,27 @@ class ChatViewController: MessagesViewController {
             }
         }
     }
-}
-
-extension ChatViewController: InputBarAccessoryViewDelegate {
-    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        guard !text.replacingOccurrences(of: " ", with: "").isEmpty, let sender = selfSender, let messageID = createMessageID() else {
-            return
-        }
-        
-        let message = Message(sender: sender,
-                              messageId: messageID,
-                              sentDate: Date(),
-                              kind: .text(text))
-        
-        if isNewChat {
-            DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success, id in
-                guard let strongSelf = self else {
-                    return
-                }
-                if success {
-                    DispatchQueue.main.async {
-                        strongSelf.conversationID = id
-                        strongSelf.listenForMessages(shouldScrollToBottom: true)
-                    }
-                } else {
-                    print("Error")
-                }
-            })
-            self.isNewChat = false
-        } else {
-            DatabaseManager.shared.sendMessage(with: message, to: self.conversationID, receiverEmail: self.receiverEmailUser, userName: self.title ?? "User") { success in
-                if success {
-                    print("Sended")
-                } else {
-                    print("Error")
-                }
-            }
-        }
-        self.messageInputBar.inputTextView.text = nil
-    }
-    
-    private func createMessageID() -> String? {
-        guard let currentUser = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String else {
-            return nil
-        }
-        
-        let safeEmail = ChatUser.getSafeEmail(with: currentUser)
-        
-        let dateString = Self.dateFormatter.string(from: Date())
-        let newIdentifier = "\(self.receiverEmailUser)_\(safeEmail)_\(dateString)"
-        
-        return newIdentifier
-    }
-}
-
-extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
-    func currentSender() -> SenderType {
-        if let sender = selfSender {
-            return sender
-        } else {
-            return Sender(photoURL: "", senderId: "-1", displayName: "")
-        }
-    }
-    
-    func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
-        return messages[indexPath.section]
-    }
-    
-    func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return messages.count
-    }
     
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-        
+        let sender = message.sender
+        var safeEmail = ""
+        if sender.senderId == selfSender?.senderId {
+            guard let currentUser = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String else {
+                return
+            }
+            safeEmail = ChatUser.getSafeEmail(with: currentUser)
+            
+        } else {
+            safeEmail = ChatUser.getSafeEmail(with: self.receiverEmailUser)
+        }
+        let imagePath = "images/\(safeEmail)_profile_picture.png"
+        StorageManager.shared.getDownloadURL(for: imagePath) { result in
+            switch result{
+            case .success(let url):
+                avatarView.sd_setImage(with: url)
+            case .failure(_):
+                return
+            }
+        }
     }
-    
 }

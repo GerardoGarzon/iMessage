@@ -17,7 +17,6 @@ struct ChatUser {
     var profilePicture: String {
         return ChatUser.getProfilePictureName(with: safeEmail)
     }
-    // let profilePictureURL: String
     
     static func getSafeEmail(with emailAddress: String) -> String {
         var email = emailAddress.replacingOccurrences(of: ".", with: "-")

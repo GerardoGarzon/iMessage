@@ -67,8 +67,10 @@ class ContactTableViewCell: UITableViewCell {
     public func configure(with model: Contact) {
         self.userName.text = model.name
         self.userMessage.text = model.lastMessage.text
-        self.userImageView.image = UIImage(systemName: K.RegisterView.userIcon)
-        self.userImageView.tintColor = .gray
+        if self.userImageView.image == nil {
+            self.userImageView.image = UIImage(systemName: K.RegisterView.userIcon)
+            self.userImageView.tintColor = .gray
+        }
         self.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         let imagePath = "images/\(model.userEmail)_profile_picture.png"

@@ -100,7 +100,6 @@ final class DatabaseManager {
     public enum UsersError: Error{
         case failedToFetch
     }
-    
 }
 
 // MARK: - Messages managment extension database

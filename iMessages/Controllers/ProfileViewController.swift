@@ -12,14 +12,17 @@ import GoogleSignIn
 import FBSDKLoginKit
 
 class ProfileViewController: UIViewController {
+    
     private let progressSpinner = JGProgressHUD(style: .dark)
     private var loginObserver: NSObjectProtocol?
+    private var data = [String]()
     
     @IBOutlet weak var profileConfigurations: UITableView!
-    private var data = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         loginObserver = NotificationCenter.default.addObserver(forName: .didLoginInNotification, object: nil, queue: .main, using: { [weak self] notification in
             guard let strongSelf = self else {
@@ -29,8 +32,6 @@ class ProfileViewController: UIViewController {
             strongSelf.profileConfigurations.tableHeaderView = strongSelf.createHeader()
             strongSelf.tabBarController?.selectedIndex = 0
         })
-        
-        view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
         profileConfigurations.separatorStyle = .none
         profileConfigurations.register(UITableViewCell.self, forCellReuseIdentifier: K.ProfileView.TableView.cellIdentifier)
@@ -59,13 +60,12 @@ extension ProfileViewController {
         let safeEmail = ChatUser.getSafeEmail(with: email)
         let profilePicture = ChatUser.getProfilePictureName(with: safeEmail)
         let imagePath = "images/\(profilePicture)"
-        
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.width, height: 300))
-        
         let profileImageView = UIImageView(frame: CGRect(x: (headerView.width / 2) - 125,
                                                          y: (headerView.height / 2) - 125,
                                                          width: 250,
                                                          height: 250))
+        
         profileImageView.layer.cornerRadius = profileImageView.width / 2
         profileImageView.tintColor = .gray
         profileImageView.contentMode = .scaleAspectFill
@@ -87,6 +87,7 @@ extension ProfileViewController {
         })
         
         headerView.addSubview(profileImageView)
+        
         data.append("\(UserDefaults.standard.value(forKey: K.Database.displayedName) ?? "Name")")
         data.append("\(UserDefaults.standard.value(forKey: K.Database.emailAddress) ?? "Email")")
         data.append("")
