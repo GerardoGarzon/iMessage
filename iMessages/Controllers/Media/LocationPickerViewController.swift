@@ -122,8 +122,4 @@ extension LocationPickerViewController: CLLocationManagerDelegate {
         }
         
     }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        //
-    }
 }

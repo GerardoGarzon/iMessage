@@ -108,6 +108,16 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		F704E0A628C79F580094DD43 /* MediaModels */ = {
+			isa = PBXGroup;
+			children = (
+				F755C5B128C32E28003D1272 /* Media.swift */,
+				F75C89C828C6CEB5002632A0 /* Location.swift */,
+				F75C89CC28C71C07002632A0 /* Audio.swift */,
+			);
+			path = MediaModels;
+			sourceTree = "<group>";
+		};
 		F7123CD428C1150B00C04A93 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -179,14 +189,12 @@
 		F7A8B2FE28B070770065A94E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F704E0A628C79F580094DD43 /* MediaModels */,
 				F7D25C6928B514D7005ECBD8 /* ChatUser.swift */,
 				F7B9F63928B5794700F77513 /* Message.swift */,
 				F7B9F63B28B579B100F77513 /* Sender.swift */,
 				F7E48B4B28BD29C700D7F77E /* Contact.swift */,
 				F7E48B4D28BD2A1A00D7F77E /* LatestMessage.swift */,
-				F755C5B128C32E28003D1272 /* Media.swift */,
-				F75C89C828C6CEB5002632A0 /* Location.swift */,
-				F75C89CC28C71C07002632A0 /* Audio.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";

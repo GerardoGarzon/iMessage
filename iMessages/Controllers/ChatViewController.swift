@@ -227,20 +227,6 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
                                     UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
                                  ])
     }
-    
-    @objc func recordingAudio() {
-        if isRecording {
-            self.isRecording = false
-            self.audiobutton.image = UIImage(systemName: "mic")
-            self.audiobutton.tintColor = UIColor(named: K.Colors.textColor)
-            self.stopRecording(success: true)
-        } else {
-            self.isRecording = true
-            self.audiobutton.image = UIImage(systemName: "record.circle.fill")?.withTintColor(.red)
-            self.audiobutton.tintColor = UIColor(named: K.Colors.secondaryColor)
-            self.startRecording()
-        }
-    }
 }
 
 // MARK: - Other type of messages managment
@@ -295,11 +281,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
         }
         navigationController?.pushViewController(locationViewController, animated: true)
     }
-    
-    func recordAudio() {
-        
-    }
-    
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
     }
@@ -330,6 +312,36 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
             }
         }
     }
+    
+    func sendLocationMessages(_ longitude: Double, _ latitude: Double) {
+        guard let sender = self.selfSender else {
+            return
+        }
+        
+        createMessageID { id in
+            let message = Message(sender: sender,
+                                  messageId: id,
+                                  sentDate: Date(),
+                                  kind: .location(Location(location: CLLocation(latitude: latitude, longitude: longitude), size: CGSize(width: 300, height: 300))))
+            
+            if self.isNewChat {
+                DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success, id in
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    if success {
+                        DispatchQueue.main.async {
+                            strongSelf.conversationID = id
+                            strongSelf.listenForMessages(shouldScrollToBottom: true)
+                        }
+                    }
+                })
+                self.isNewChat = false
+            } else {
+                DatabaseManager.shared.sendMessage(with: message, to: self.conversationID, receiverEmail: self.receiverEmailUser, userName: self.title ?? "User") { _ in return}
+            }
+        }
+    }
 }
 
 
@@ -350,6 +362,20 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
         return messages.count
+    }
+    
+    @objc func recordingAudio() {
+        if isRecording {
+            self.isRecording = false
+            self.audiobutton.image = UIImage(systemName: "mic")
+            self.audiobutton.tintColor = UIColor(named: K.Colors.textColor)
+            self.stopRecording(success: true)
+        } else {
+            self.isRecording = true
+            self.audiobutton.image = UIImage(systemName: "record.circle.fill")?.withTintColor(.red)
+            self.audiobutton.tintColor = UIColor(named: K.Colors.secondaryColor)
+            self.startRecording()
+        }
     }
     
     func listenForMessages(shouldScrollToBottom: Bool) {
@@ -422,36 +448,6 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
             
         case .failure(let error):
             print(error.localizedDescription)
-        }
-    }
-    
-    func sendLocationMessages(_ longitude: Double, _ latitude: Double) {
-        guard let sender = self.selfSender else {
-            return
-        }
-        
-        createMessageID { id in
-            let message = Message(sender: sender,
-                                  messageId: id,
-                                  sentDate: Date(),
-                                  kind: .location(Location(location: CLLocation(latitude: latitude, longitude: longitude), size: CGSize(width: 300, height: 300))))
-            
-            if self.isNewChat {
-                DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success, id in
-                    guard let strongSelf = self else {
-                        return
-                    }
-                    if success {
-                        DispatchQueue.main.async {
-                            strongSelf.conversationID = id
-                            strongSelf.listenForMessages(shouldScrollToBottom: true)
-                        }
-                    }
-                })
-                self.isNewChat = false
-            } else {
-                DatabaseManager.shared.sendMessage(with: message, to: self.conversationID, receiverEmail: self.receiverEmailUser, userName: self.title ?? "User") { _ in return}
-            }
         }
     }
 }
