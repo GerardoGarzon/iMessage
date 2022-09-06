@@ -66,7 +66,22 @@ class ContactTableViewCell: UITableViewCell {
     
     public func configure(with model: Contact) {
         self.userName.text = model.name
-        self.userMessage.text = model.lastMessage.text
+        if model.lastMessage.type == "text" {
+            self.userMessage.text = model.lastMessage.text
+        } else if model.lastMessage.type == "photo" {
+            self.userMessage.textAlignment = .left
+            self.userMessage.attributedText = placeholderForChar(iconName: "photo", placeholder: "Photo")
+        } else if model.lastMessage.type == "video" {
+            self.userMessage.textAlignment = .left
+            self.userMessage.attributedText = placeholderForChar(iconName: "film", placeholder: "Video")
+        } else if model.lastMessage.type == "location" {
+            self.userMessage.textAlignment = .left
+            self.userMessage.attributedText = placeholderForChar(iconName: "map", placeholder: "Location")
+        } else if model.lastMessage.type == "audio" {
+            self.userMessage.textAlignment = .left
+            self.userMessage.attributedText = placeholderForChar(iconName: "headphones", placeholder: "Audio")
+        }
+        
         if self.userImageView.image == nil {
             self.userImageView.image = UIImage(systemName: K.RegisterView.userIcon)
             self.userImageView.tintColor = .gray
@@ -97,5 +112,19 @@ class ContactTableViewCell: UITableViewCell {
                 print(err.localizedDescription)
             }
         }
+    }
+    
+    func placeholderForChar(iconName: String, placeholder: String) -> NSMutableAttributedString {
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = UIImage(systemName: iconName)?.withTintColor(.gray)
+        let imageOffsetY: CGFloat = -3.0
+        imageAttachment.bounds = CGRect(x: 0, y: imageOffsetY, width: imageAttachment.image!.size.width, height: imageAttachment.image!.size.height)
+        let attachmentString = NSAttributedString(attachment: imageAttachment)
+        let completeText = NSMutableAttributedString(string: "")
+        completeText.append(attachmentString)
+        let textAfterIcon = NSAttributedString(string: "  \(placeholder)")
+        completeText.append(textAfterIcon)
+        
+        return completeText
     }
 }

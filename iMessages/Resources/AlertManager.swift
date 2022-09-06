@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 final class AlertManager {
-    static func createAlert(sender: UIViewController, title: String, body: String, style: UIAlertController.Style, options: [UIAlertAction]) {
+    static func createAlert(sender: UIViewController, title: String?, body: String?, style: UIAlertController.Style, options: [UIAlertAction]) {
         let alert = UIAlertController(title: title,
                                       message: body,
                                       preferredStyle: style)

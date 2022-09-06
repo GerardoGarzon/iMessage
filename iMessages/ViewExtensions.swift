@@ -41,7 +41,7 @@ extension UITextField {
             button.setImage(UIImage(systemName: K.Extensions.eyeSlashed), for: .normal)
         }
     }
-
+    
     func enablePasswordToggle(){
         let button = UIButton(type: .custom)
         setPasswordToggleImage(button)
