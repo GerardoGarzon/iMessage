@@ -5,9 +5,11 @@
 //  Created by Gerardo Garzon on 19/08/22.
 //
 
+import AVKit
 import UIKit
 import MessageKit
 import SDWebImage
+import AVFoundation
 import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController {
@@ -28,7 +30,14 @@ class ChatViewController: MessagesViewController {
     private let audiobutton: InputBarButtonItem = {
         let button = InputBarButtonItem()
         button.setImage(UIImage(systemName: "mic"), for: .normal)
-        button.tintColor = UIColor.gray
+        button.tintColor = UIColor(named: K.Colors.textColor)
+        return button
+    }()
+    
+    private let attachMessages: InputBarButtonItem = {
+        let button = InputBarButtonItem()
+        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.tintColor = UIColor(named: K.Colors.textColor)
         return button
     }()
     
@@ -42,6 +51,8 @@ class ChatViewController: MessagesViewController {
                       senderId: safeEmail,
                       displayName: displayedName)
     }()
+    
+    // MARK: - Initializers
     
     init(with email: String, conversationID: String?) {
         self.receiverEmailUser = email
@@ -59,12 +70,12 @@ class ChatViewController: MessagesViewController {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(named: K.Colors.backgroundColor)
-
+        
         
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
-        
+        messagesCollectionView.messageCellDelegate = self
         messageInputBar.delegate = self
         
         configureInputTextView()
@@ -145,19 +156,172 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         sendButton.title = ""
         sendButton.image = UIImage(systemName: "paperplane.fill")
         sendButton.tintColor = UIColor.gray
-        sendButton.setSize(CGSize(width: 30, height: 30), animated: false)
+        sendButton.setSize(CGSize(width: 30, height: 40), animated: false)
         
         let items = [sendButton, audiobutton]
         
         messagesCollectionView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         messageInputBar.backgroundView.backgroundColor = UIColor(named: K.Colors.backgroundColor)
         
-        audiobutton.setSize(CGSize(width: 30, height: 30), animated: false)
+        messageInputBar.inputTextView.layer.cornerRadius = 10
+        messageInputBar.inputTextView.backgroundColor = UIColor(named: "lightTextColor")
         
+        // TODO: - Audio button funcion Record/Play
+        audiobutton.setSize(CGSize(width: 30, height: 40), animated: false)
+        attachMessages.setSize(CGSize(width: 30, height: 40), animated: false)
+        
+        messageInputBar.setStackViewItems([attachMessages], forStack: .left, animated: false)
         messageInputBar.setStackViewItems(items, forStack: .right, animated: false)
         messageInputBar.setRightStackViewWidthConstant(to: 62 , animated: false)
+        messageInputBar.setLeftStackViewWidthConstant(to: 31, animated: false)
+        
+        configureInputButtons()
+    }
+    
+    func configureInputButtons() {
+        attachMessages.addTarget(self, action: #selector(openAttachOptions), for: .touchUpInside)
+    }
+    
+    @objc func openAttachOptions() {
+        AlertManager.createAlert(sender: self,
+                                 title: nil,
+                                 body: nil,
+                                 style: .actionSheet,
+                                 options: [
+                                    UIAlertAction(title: "Photo", style: .default, handler: { [weak self] action in
+                                        self?.presentMediaTypeMenu(isVideo: false)
+                                    }),
+                                    UIAlertAction(title: "Video", style: .default, handler: { [weak self] action in
+                                        self?.presentMediaTypeMenu(isVideo: true)
+                                    }),
+                                    UIAlertAction(title: "Location", style: .default, handler: { [weak self] action in
+                                        self?.openMaps()
+                                    }),
+                                    UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                                 ])
     }
 }
+
+// MARK: - Other type of messages managment
+
+extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func presentMediaTypeMenu(isVideo: Bool) {
+        AlertManager.createAlert(sender: self,
+                                 title: nil,
+                                 body: nil,
+                                 style: .actionSheet,
+                                 options: [
+                                    UIAlertAction(title: "Camera", style: .default, handler: { [weak self] action in
+                                        self?.openCamera(isVideo: isVideo)
+                                    }),
+                                    UIAlertAction(title: "Gallery", style: .default, handler: { [weak self] action in
+                                        self?.openGallery(isVideo: isVideo)
+                                    }),
+                                    UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                                 ])
+    }
+    
+    func openGallery(isVideo: Bool) {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        picker.allowsEditing = true
+        if isVideo {
+            picker.mediaTypes = ["public.movie"]
+        }
+        self.present(picker, animated: true)
+    }
+    
+    func openCamera(isVideo: Bool) {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = self
+        picker.allowsEditing = true
+        if isVideo {
+            picker.mediaTypes = ["public.movie"]
+        }
+        self.present(picker, animated: true)
+    }
+    
+    func openMaps() {
+        
+    }
+    
+    func recordAudio() {
+        
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        dismiss(animated: true)
+        guard let id = self.createMessageID(),
+              let sender = self.selfSender else {
+            return
+        }
+    
+        if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage, let imageData = image.pngData() {
+            let fileName = "photo_message\(id).png"
+            
+            StorageManager.shared.uploadMessageImage(with: imageData, fileName: fileName) { [weak self] result in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.manageMediaTypeUploaded(isVideo: false, result: result, sender: sender, id: id)
+            }
+        } else if let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL {
+            let fileName = "video_message_\(id).mov"
+            StorageManager.shared.uploadMessageVideo(with: videoURL, fileName: fileName) { [weak self] result in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.manageMediaTypeUploaded(isVideo: true, result: result, sender: sender, id: id)
+            }
+        }
+    }
+    
+    func manageMediaTypeUploaded(isVideo: Bool, result: Result<String, Error>, sender: Sender, id: String) {
+        switch result {
+        case .success(let urlString):
+            // Send message
+            guard let url = URL(string: urlString),
+                  let placeholder = UIImage(systemName: "plus") else {
+                return
+            }
+            
+            var type: MessageKind?
+            let media = Media(url: url, image: nil, placeholderImage: placeholder, size: .zero)
+            
+            if isVideo {
+                type = .video(media)
+            } else {
+                type = .photo(media)
+            }
+            
+            let message = Message(sender: sender, messageId: id, sentDate: Date(), kind: type!)
+            
+            if self.isNewChat {
+                DatabaseManager.shared.createNewChatWith(with: self.receiverEmailUser, name: self.title ?? "User", firstMessage: message, completion: { success, id in
+                    if success {
+                        DispatchQueue.main.async {
+                            self.conversationID = id
+                            self.listenForMessages(shouldScrollToBottom: true)
+                        }
+                    }
+                })
+                self.isNewChat = false
+            } else {
+                DatabaseManager.shared.sendMessage(with: message, to: self.conversationID, receiverEmail: self.receiverEmailUser, userName: self.title ?? "User") { _ in return }
+            }
+            
+        case .failure(let error):
+            print(error.localizedDescription)
+        }
+    }
+}
+
 
 // MARK: - Messages managment
 
@@ -221,6 +385,55 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
             case .failure(_):
                 return
             }
+        }
+    }
+    
+    func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        guard let imageURL = message.kind.messageContent else {
+            return
+        }
+        
+        if message.kind.messageKindString == "photo" {
+            imageView.sd_setImage(with: URL(string: imageURL))
+        } else if message.kind.messageKindString == "video" {
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        
+    }
+}
+
+// MARK: - Message cell delegate
+
+extension ChatViewController: MessageCellDelegate {
+    func didTapImage(in cell: MessageCollectionViewCell) {
+        guard let indexPath = messagesCollectionView.indexPath(for: cell) else {
+            return
+        }
+        let message = messages[indexPath.section]
+        
+        switch message.kind {
+        case .photo(let media):
+            guard let imageURL = media.url else {
+                return
+            }
+            
+            let photoViewController = PhotoViewerViewController(with: imageURL)
+            
+            self.navigationController?.pushViewController(photoViewController, animated: true)
+        case .video(let media):
+            guard let videoURL = media.url else {
+                return
+            }
+            let videoPlayerViewController = AVPlayerViewController()
+            videoPlayerViewController.player = AVPlayer(url: videoURL)
+            videoPlayerViewController.player?.play()
+            present(videoPlayerViewController, animated: true)
+            
+        default:
+            break
         }
     }
 }

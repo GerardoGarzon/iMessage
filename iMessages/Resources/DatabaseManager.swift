@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseDatabase
+import MessageKit
 
 final class DatabaseManager {
     static let shared = DatabaseManager()
@@ -124,32 +125,13 @@ extension DatabaseManager {
             
             let messageDate = firstMessage.sentDate
             let dateString = ChatViewController.dateFormatter.string(from: messageDate)
-            var message = ""
-            
-            switch firstMessage.kind {
-            case .text(let text):
-                message = text
-            case .attributedText(_):
-                break
-            case .photo(_):
-                break
-            case .video(_):
-                break
-            case .location(_):
-                break
-            case .emoji(_):
-                break
-            case .audio(_):
-                break
-            case .contact(_):
-                break
-            case .linkPreview(_):
-                break
-            case .custom(_):
-                break
+            guard let message = firstMessage.kind.messageContent else {
+                completion(false, "")
+                return
             }
             
             let conversationID = "conversation_\(firstMessage.messageId)"
+            
             let newConversation: [String: Any] = [
                 "id": conversationID,
                 "receiver_user": user,
@@ -157,7 +139,8 @@ extension DatabaseManager {
                 "latest_message": [
                     "date": dateString,
                     "message": message,
-                    "is_read": false
+                    "is_read": false,
+                    "type": firstMessage.kind.messageKindString
                 ]
             ]
             
@@ -168,7 +151,8 @@ extension DatabaseManager {
                 "latest_message": [
                     "date": dateString,
                     "message": message,
-                    "is_read": false
+                    "is_read": false,
+                    "type": firstMessage.kind.messageKindString
                 ]
             ]
             
@@ -214,29 +198,8 @@ extension DatabaseManager {
     private func finishCreatingChat(with conversationID: String, name: String, firstMessage: Message, completion: @escaping (Bool, String) -> (Void)) {
         let messageDate = firstMessage.sentDate
         let dateString = ChatViewController.dateFormatter.string(from: messageDate)
-        var message = ""
-        
-        switch firstMessage.kind {
-        case .text(let text):
-            message = text
-        case .attributedText(_):
-            break
-        case .photo(_):
-            break
-        case .video(_):
-            break
-        case .location(_):
-            break
-        case .emoji(_):
-            break
-        case .audio(_):
-            break
-        case .contact(_):
-            break
-        case .linkPreview(_):
-            break
-        case .custom(_):
-            break
+        guard let message = firstMessage.kind.messageContent else {
+            return
         }
         
         guard let currentUser = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String else {
@@ -284,12 +247,13 @@ extension DatabaseManager {
                       let userEmail = dictonary["receiver_user"] as? String,
                       let latestMessage = dictonary["latest_message"] as? [String: Any],
                       let message = latestMessage["message"] as? String,
+                      let type = latestMessage["type"] as? String,
                       let isRead = latestMessage["is_read"] as? Bool,
                       let date = latestMessage["date"] as? String else {
                     return nil
                 }
                 
-                let latestMessageObject = LatestMessage(date: date, text: message, isRead: isRead)
+                let latestMessageObject = LatestMessage(date: date, text: message, isRead: isRead, type: type)
                 
                 return Contact(id: conversationID, name: name, lastMessage: latestMessageObject, userEmail: userEmail)
             })
@@ -308,19 +272,45 @@ extension DatabaseManager {
                 guard let messageID = dictionary["id"] as? String,
                       let content = dictionary["content"] as? String,
                       let date = dictionary["date"] as? String,
-                      // let isRead = dictionary["is_read"] as? Bool,
+                      let type = dictionary["type"] as? String,
                       let name = dictionary["name"] as? String,
                       let senderEmail = dictionary["sender_email"] as? String,
                       let sentDate = ChatViewController.dateFormatter.date(from: date) else {
                     completion(.failure(DatabaseManager.UsersError.failedToFetch))
                     return nil
                 }
+                
+                var kind: MessageKind?
+                if type == "text" {
+                    kind = .text(content)
+                } else if type == "photo" {
+                    guard let url = URL(string: content),
+                          let placeholder = UIImage(systemName: "plus") else {
+                        return nil
+                    }
+                    let media = Media(url: url, image: nil, placeholderImage: placeholder, size: CGSize(width: 300, height: 300))
+                    kind = .photo(media)
+                } else if type == "video" {
+                    guard let url = URL(string: content),
+                          let placeholder = UIImage(systemName: "play") else {
+                        return nil
+                    }
+                    let media = Media(url: url, image: nil, placeholderImage: placeholder, size: CGSize(width: 300, height: 300))
+                    kind = .video(media)
+                }
+                
+                guard let kindMessage = kind else {
+                    return nil
+                }
+                
                 let sender = Sender(photoURL: "", senderId: senderEmail, displayName: name)
-                return Message(sender: sender, messageId: messageID, sentDate: sentDate, kind: .text(content))
+                return Message(sender: sender, messageId: messageID, sentDate: sentDate, kind: kindMessage)
             })
             completion(.success(messages))
         }
     }
+    
+    
     
     public func sendMessage(with message: Message, to conversationID: String, receiverEmail: String, userName: String, completion: @escaping (Bool) -> (Void)) {
         database.child("\(conversationID)/messages").observeSingleEvent(of: .value) { snapshot in
@@ -379,6 +369,7 @@ extension DatabaseManager {
             }
             
             guard let date = message["date"] as? String,
+                  let type = message["type"] as? String,
                   let text = message["content"] as? String,
                   let receiver_user = value[count]["receiver_user"] as? String,
                   let name = value[count]["name"] as? String else {
@@ -392,6 +383,7 @@ extension DatabaseManager {
                 "name": name,
                 "latest_message": [
                     "date": date,
+                    "type": type,
                     "is_read": false,
                     "message": text
                 ]

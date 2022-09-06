@@ -2,6 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <key>NSFileProviderDomainUsageDescription</key>
+        <string></string>
+        <key>LSRequiresIPhoneOS</key>
+        <true/>
+        <key>NSCameraUsageDescription</key>
+        <string>Please allow access to take a profile picture</string>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>Please allow access to select a photo for your profile.</string>
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Please allow access to send audio and video messages.</string>
         <key>CFBundleURLTypes</key>
         <array>
             <dict>
@@ -44,7 +54,6 @@
         <string>298c0da8eece3812997fd951a10221f6</string>
         <key>FacebookDisplayName</key>
         <string>Messages App</string>
-        
         <key>LSApplicationQueriesSchemes</key>
         <array>
             <string>fbapi</string>

@@ -47,10 +47,18 @@ extension MessageKind {
             return text
         case .attributedText(_):
             return nil
-        case .photo(_):
-            return nil
-        case .video(_):
-            return nil
+        case .photo(let mediaItem):
+            if let url = mediaItem.url?.absoluteString {
+                return url
+            } else {
+                return nil
+            }
+        case .video(let mediaItem):
+            if let url = mediaItem.url?.absoluteString {
+                return url
+            } else {
+                return nil
+            }
         case .location(_):
             return nil
         case .emoji(_):

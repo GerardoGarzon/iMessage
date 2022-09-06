@@ -22,7 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
-        
         // Navbar configuration color
         UINavigationBar.appearance().tintColor = UIColor(named: K.Colors.secondaryColor)
         
@@ -31,6 +30,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             application,
             didFinishLaunchingWithOptions: launchOptions
         )
+        
+        if (UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String) == nil {
+            do {
+                try FirebaseAuth.Auth.auth().signOut()
+            } catch {}
+        }
         
         return true
     }

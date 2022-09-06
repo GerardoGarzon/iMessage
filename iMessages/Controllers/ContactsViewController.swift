@@ -175,6 +175,10 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
         return 90
     }
     
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+    
     func clearData() {
         self.conversations.removeAll()
         self.contactsTable.reloadData()
