@@ -74,6 +74,12 @@ class ContactTableViewCell: UITableViewCell {
         } else if model.lastMessage.type == "video" {
             self.userMessage.textAlignment = .left
             self.userMessage.attributedText = placeholderForChar(iconName: "film", placeholder: "Video")
+        } else if model.lastMessage.type == "location" {
+            self.userMessage.textAlignment = .left
+            self.userMessage.attributedText = placeholderForChar(iconName: "map", placeholder: "Location")
+        } else if model.lastMessage.type == "audio" {
+            self.userMessage.textAlignment = .left
+            self.userMessage.attributedText = placeholderForChar(iconName: "headphones", placeholder: "Audio")
         }
         
         if self.userImageView.image == nil {

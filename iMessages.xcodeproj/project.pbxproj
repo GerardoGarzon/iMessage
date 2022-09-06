@@ -15,6 +15,10 @@
 		F72FBDB528B06FD500113F29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F72FBDB328B06FD500113F29 /* LaunchScreen.storyboard */; };
 		F755C5B228C32E28003D1272 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755C5B128C32E28003D1272 /* Media.swift */; };
 		F755C5B528C3377E003D1272 /* PhotoViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755C5B428C3377E003D1272 /* PhotoViewerViewController.swift */; };
+		F75C89C928C6CEB5002632A0 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C89C828C6CEB5002632A0 /* Location.swift */; };
+		F75C89CB28C7078C002632A0 /* LocationPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C89CA28C7078C002632A0 /* LocationPickerViewController.swift */; };
+		F75C89CD28C71C07002632A0 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C89CC28C71C07002632A0 /* Audio.swift */; };
+		F75C89D128C73A63002632A0 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C89D028C73A63002632A0 /* AudioController.swift */; };
 		F760345328B466950055FB24 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760345228B466940055FB24 /* DatabaseManager.swift */; };
 		F7769EA928B1ADD4008A4C11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7769EA828B1ADD4008A4C11 /* Assets.xcassets */; };
 		F77C8BFA28B5A7FF0081F493 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77C8BF928B5A7FF0081F493 /* StorageManager.swift */; };
@@ -50,6 +54,10 @@
 		F755C5B128C32E28003D1272 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		F755C5B428C3377E003D1272 /* PhotoViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewerViewController.swift; sourceTree = "<group>"; };
 		F75722D228B6AC3F005CAC3F /* iMessages.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iMessages.entitlements; sourceTree = "<group>"; };
+		F75C89C828C6CEB5002632A0 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		F75C89CA28C7078C002632A0 /* LocationPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPickerViewController.swift; sourceTree = "<group>"; };
+		F75C89CC28C71C07002632A0 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		F75C89D028C73A63002632A0 /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		F760345228B466940055FB24 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		F7769EA828B1ADD4008A4C11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F77C8BF928B5A7FF0081F493 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
@@ -151,6 +159,8 @@
 			isa = PBXGroup;
 			children = (
 				F755C5B428C3377E003D1272 /* PhotoViewerViewController.swift */,
+				F75C89CA28C7078C002632A0 /* LocationPickerViewController.swift */,
+				F75C89D028C73A63002632A0 /* AudioController.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -175,6 +185,8 @@
 				F7E48B4B28BD29C700D7F77E /* Contact.swift */,
 				F7E48B4D28BD2A1A00D7F77E /* LatestMessage.swift */,
 				F755C5B128C32E28003D1272 /* Media.swift */,
+				F75C89C828C6CEB5002632A0 /* Location.swift */,
+				F75C89CC28C71C07002632A0 /* Audio.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -316,13 +328,16 @@
 				F7D25C6C28B51B2E005ECBD8 /* AlertManager.swift in Sources */,
 				F7A8B30F28B0B9A30065A94E /* ViewExtensions.swift in Sources */,
 				F72FBDA928B06FD200113F29 /* AppDelegate.swift in Sources */,
+				F75C89CB28C7078C002632A0 /* LocationPickerViewController.swift in Sources */,
 				F755C5B528C3377E003D1272 /* PhotoViewerViewController.swift in Sources */,
 				F7A8B30728B0825C0065A94E /* ChatViewController.swift in Sources */,
 				F7D25C6A28B514D7005ECBD8 /* ChatUser.swift in Sources */,
 				F7D25C6E28B53CE1005ECBD8 /* ProfileViewController.swift in Sources */,
 				F7A8B30B28B0827D0065A94E /* RegisterViewController.swift in Sources */,
 				F7B9F63C28B579B100F77513 /* Sender.swift in Sources */,
+				F75C89CD28C71C07002632A0 /* Audio.swift in Sources */,
 				F7A616F528BFC4FA00C62BE5 /* NewContactViewCell.swift in Sources */,
+				F75C89C928C6CEB5002632A0 /* Location.swift in Sources */,
 				F7A8B30928B082750065A94E /* LoginViewController.swift in Sources */,
 				F7B9F63A28B5794700F77513 /* Message.swift in Sources */,
 				F72FBDAB28B06FD200113F29 /* SceneDelegate.swift in Sources */,
@@ -330,6 +345,7 @@
 				F760345328B466950055FB24 /* DatabaseManager.swift in Sources */,
 				F77C8BFA28B5A7FF0081F493 /* StorageManager.swift in Sources */,
 				F7E48B4E28BD2A1A00D7F77E /* LatestMessage.swift in Sources */,
+				F75C89D128C73A63002632A0 /* AudioController.swift in Sources */,
 				F7E48B4A28BD242700D7F77E /* ContactTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -96,4 +96,37 @@ final class StorageManager {
             print(error.localizedDescription)
         }
     }
+    
+    public func uploadMessageAudio(with fileURL: URL, fileName: String, completion: @escaping UploadPictureCompletion) {
+        do {
+            let data = try Data(contentsOf: fileURL)
+            print(data)
+            if let storageDate = data as Data? {
+                let metaData = StorageMetadata()
+                metaData.contentType = "audio/mpeg"
+                storage.child("message_audio/\(fileName)").putData(storageDate, metadata: metaData, completion: { [weak self] metadata, error in
+                    guard error == nil else {
+                        // failed
+                        print("failed to upload audio file to firebase for picture")
+                        completion(.failure(error!))
+                        return
+                    }
+                    
+                    self?.storage.child("message_audio/\(fileName)").downloadURL(completion: { url, error in
+                        guard let url = url else {
+                            print("Failed to get download url")
+                            completion(.failure(error!))
+                            return
+                        }
+                        
+                        let urlString = url.absoluteString
+                        print("download url returned: \(urlString)")
+                        completion(.success(urlString))
+                    })
+                })
+            }
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
 }

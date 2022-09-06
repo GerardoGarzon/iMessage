@@ -179,6 +179,23 @@ extension ContactsViewController: UITableViewDataSource, UITableViewDelegate {
         return .delete
     }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            tableView.beginUpdates()
+            
+            let conversationID = conversations[indexPath.row].id
+            
+            DatabaseManager.shared.deleteConversation(with: conversationID) { [weak self] deleted in
+                if deleted {
+                    self?.conversations.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .left)
+                }
+            }
+            
+            tableView.endUpdates()
+        }
+    }
+    
     func clearData() {
         self.conversations.removeAll()
         self.contactsTable.reloadData()

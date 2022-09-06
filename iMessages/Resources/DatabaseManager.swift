@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseDatabase
 import MessageKit
+import CoreLocation
 
 final class DatabaseManager {
     static let shared = DatabaseManager()
@@ -163,9 +164,22 @@ extension DatabaseManager {
                 }
                 
                 if var conversations = userNode["conversations"] as? [[String: Any]] {
-                    conversations.append(receiver_newConversation)
-                    userNode["conversations"] = conversations
-                    
+                    var conversationExist: Bool = false
+                    var conversationIndex: Int = 0
+                    for conversation in conversations {
+                        if conversation["id"] as? String == conversationID {
+                            conversationExist = true
+                            break
+                        }
+                        conversationIndex += 1
+                    }
+                    if !conversationExist {
+                        conversations.append(newConversation)
+                        userNode["conversations"] = conversations
+                    } else {
+                        conversations[conversationIndex]["latest_message"] = newConversation["latest_message"]
+                        userNode["conversations"] = conversations
+                    }
                 } else {
                     userNode["conversations"] = [
                         receiver_newConversation
@@ -209,7 +223,7 @@ extension DatabaseManager {
         
         let safeEmail = ChatUser.getSafeEmail(with: currentUser)
         
-        let collectionMessage: [String: Any] = [
+        var collectionMessage: [String: Any] = [
             "id": conversationID,
             "type": firstMessage.kind.messageKindString,
             "name": name,
@@ -219,20 +233,38 @@ extension DatabaseManager {
             "is_read": false
         ]
         
+        if let duration = firstMessage.audioDuration {
+            collectionMessage["duration"] = duration
+        }
+        
         let value: [String: Any] = [
             "messages": [
                 collectionMessage
             ]
         ]
         
-        database.child(conversationID).setValue(value, withCompletionBlock: { error, _ in
-            guard error == nil else {
-                completion(false, "")
-                return
+        database.child("\(conversationID)/messages").observeSingleEvent(of: .value) { snapshot in
+            if var array = snapshot.value as? [[String: Any]] {
+                array.append(collectionMessage)
+                self.database.child("\(conversationID)/messages").setValue(array, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false, "")
+                        return
+                    }
+                    
+                    completion(true, conversationID)
+                })
+            } else {
+                self.database.child("\(conversationID)").setValue(value, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false, "")
+                        return
+                    }
+                    
+                    completion(true, conversationID)
+                })
             }
-            
-            completion(true, conversationID)
-        })
+        }
     }
     
     public func getAllChats(for email: String, completion: @escaping (Result<[Contact], Error> ) -> (Void)) {
@@ -281,6 +313,7 @@ extension DatabaseManager {
                 }
                 
                 var kind: MessageKind?
+                var audio: Audio?
                 if type == "text" {
                     kind = .text(content)
                 } else if type == "photo" {
@@ -297,6 +330,18 @@ extension DatabaseManager {
                     }
                     let media = Media(url: url, image: nil, placeholderImage: placeholder, size: CGSize(width: 300, height: 300))
                     kind = .video(media)
+                } else if type == "location" {
+                    let coordinates = content.components(separatedBy: ",")
+                    if let latitude = Double(coordinates[1]), let longitude = Double(coordinates[0]) {
+                        let location = Location(location: CLLocation(latitude: latitude, longitude: longitude), size: CGSize(width: 300, height: 300))
+                        kind = .location(location)
+                    }
+                } else if type == "audio" {
+                    guard let url = URL(string: content), let duration = dictionary["duration"] as? Float else {
+                        return nil
+                    }
+                    audio = Audio(url: url, duration: duration, size: CGSize(width: 250, height: 50))
+                    kind = .audio(audio!)
                 }
                 
                 guard let kindMessage = kind else {
@@ -304,7 +349,11 @@ extension DatabaseManager {
                 }
                 
                 let sender = Sender(photoURL: "", senderId: senderEmail, displayName: name)
-                return Message(sender: sender, messageId: messageID, sentDate: sentDate, kind: kindMessage)
+                if type == "audio" {
+                    return Message(sender: sender, messageId: messageID, sentDate: sentDate, kind: kindMessage, audioDuration: audio?.duration)
+                } else {
+                    return Message(sender: sender, messageId: messageID, sentDate: sentDate, kind: kindMessage)
+                }
             })
             completion(.success(messages))
         }
@@ -325,7 +374,7 @@ extension DatabaseManager {
             
             let safeEmail = ChatUser.getSafeEmail(with: currentUser)
             
-            let newMessage: [String: Any] = [
+            var newMessage: [String: Any] = [
                 "id": conversationID,
                 "type": message.kind.messageKindString,
                 "name": userName,
@@ -334,6 +383,10 @@ extension DatabaseManager {
                 "sender_email": safeEmail,
                 "is_read": false
             ]
+            
+            if let duration = message.audioDuration {
+                newMessage["duration"] = duration
+            }
             
             value.append(newMessage)
             
@@ -418,6 +471,41 @@ extension DatabaseManager {
                 completion(.failure(UsersError.failedToFetch))
             } else {
                 completion(.success(conversation[0]))
+            }
+        }
+    }
+    
+    public func deleteConversation(with conversationID: String, completion: @escaping (Bool) -> (Void)) {
+        if let email = UserDefaults.standard.value(forKey: K.Database.emailAddress) as? String {
+            let safeEmail = ChatUser.getSafeEmail(with: email)
+            
+            database.child("\(safeEmail)/conversations").observeSingleEvent(of: .value) { [weak self] snapshot in
+                guard let strongSelf = self else {
+                    return
+                }
+                guard var value = snapshot.value as? [[String: Any]] else {
+                    completion(false)
+                    return
+                }
+                
+                var conversationIndex = 0
+                for conversation in value {
+                    if conversation["id"] as? String == conversationID {
+                        break
+                    }
+                    conversationIndex += 1
+                }
+                
+                value.remove(at: conversationIndex)
+                
+                strongSelf.database.child("\(safeEmail)/conversations").setValue(value) { error, _ in
+                    guard error == nil else {
+                        completion(false)
+                        return
+                    }
+                    
+                    completion(true)
+                }
             }
         }
     }

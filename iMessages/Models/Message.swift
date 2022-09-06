@@ -13,6 +13,7 @@ struct Message: MessageType {
     public var messageId: String
     public var sentDate: Date
     public var kind: MessageKind
+    public var audioDuration: Float?
 }
 
 extension MessageKind {
@@ -59,12 +60,13 @@ extension MessageKind {
             } else {
                 return nil
             }
-        case .location(_):
-            return nil
+        case .location(let coordinates):
+            let location = coordinates.location
+            return "\(location.coordinate.longitude),\(location.coordinate.latitude)"
         case .emoji(_):
             return nil
-        case .audio(_):
-            return nil
+        case .audio(let audioItem):
+            return audioItem.url.absoluteString
         case .contact(_):
             return nil
         case .linkPreview(_):
