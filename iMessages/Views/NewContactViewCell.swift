@@ -64,17 +64,17 @@ class NewContactViewCell: UITableViewCell {
             
             switch result {
             case .success(let url):
-                URLSession.shared.dataTask(with: url, completionHandler: { data, _, error in
-                    guard let data = data, error == nil else {
-                        print(error?.localizedDescription ?? "")
-                        return
+                StorageManager.shared.downloadImage(from: url) { result in
+                    switch result {
+                    case .success(let data):
+                        DispatchQueue.main.async {
+                            let image = UIImage(data: data)
+                            strongSelf.userImageView.image = image
+                        }
+                    case .failure(let error):
+                        print(error.localizedDescription)
                     }
-                    
-                    DispatchQueue.main.async {
-                        let image = UIImage(data: data)
-                        strongSelf.userImageView.image = image
-                    }
-                }).resume()
+                }
             case .failure(let err):
                 print(err.localizedDescription)
             }

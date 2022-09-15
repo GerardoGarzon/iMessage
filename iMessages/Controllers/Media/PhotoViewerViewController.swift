@@ -12,6 +12,15 @@ class PhotoViewerViewController: UIViewController {
     
     private let url: URL
     
+    init(with url: URL) {
+        self.url = url
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -32,14 +41,5 @@ class PhotoViewerViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         imageView.frame = view.bounds
-    }
-    
-    init(with url: URL) {
-        self.url = url
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

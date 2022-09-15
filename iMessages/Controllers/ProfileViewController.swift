@@ -98,17 +98,17 @@ extension ProfileViewController {
     }
     
     func downloadProfilePicture(in imageView: UIImageView, with urlPath: URL) {
-        URLSession.shared.dataTask(with: urlPath, completionHandler: { data, _, error in
-            guard let data = data, error == nil else {
-                print(error?.localizedDescription ?? "")
-                return
+        StorageManager.shared.downloadImage(from: urlPath) { result in
+            switch result {
+            case .success(let data):
+                DispatchQueue.main.async {
+                    let image = UIImage(data: data)
+                    imageView.image = image
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
             }
-            
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
-                imageView.image = image
-            }
-        }).resume()
+        }
     }
 }
 

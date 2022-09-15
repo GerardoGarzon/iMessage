@@ -16,6 +16,8 @@ final class StorageManager {
     
     public typealias UploadPictureCompletion = (Result<String, Error>) -> (Void)
     
+    private let cache = NSCache<NSString, NSData>()
+    
     public func uploadProfilePicture(with data: Data, fileName: String, completion: @escaping UploadPictureCompletion) {
         storage.child("images/\(fileName)").putData(data, metadata: nil, completion: { metaData, error in
             guard error == nil else {
@@ -129,4 +131,28 @@ final class StorageManager {
             print(error.localizedDescription)
         }
     }
+    
+    public func downloadImage(from url: URL, completion: @escaping (Result<Data, Error>) -> (Void) ) {
+        let urlString = "\(url)"
+        
+        if let image = cache.object(forKey: urlString as NSString) as? Data {
+            print("Cache")
+            completion(.success(image))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+            print("Request")
+            guard let data = data, error == nil else {
+                completion(.failure(CustomError.errorDownloadingImage))
+                return
+            }
+            self?.cache.setObject(NSData(data: data), forKey: urlString as NSString)
+            completion(.success(data))
+        }.resume()
+    }
+}
+
+enum CustomError: Error {
+    case errorDownloadingImage
 }

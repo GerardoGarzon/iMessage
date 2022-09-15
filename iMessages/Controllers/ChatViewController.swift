@@ -402,12 +402,22 @@ extension ChatViewController: MessagesDataSource, MessagesLayoutDelegate, Messag
     }
     
     func configureMediaMessageImageView(_ imageView: UIImageView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-        guard let imageURL = message.kind.messageContent else {
+        guard let imageURL = message.kind.messageContent, let url = URL(string: imageURL) else {
             return
         }
         
         if message.kind.messageKindString == "photo" {
-            imageView.sd_setImage(with: URL(string: imageURL))
+            StorageManager.shared.downloadImage(from: url) { result in
+                switch result {
+                case .success(let data):
+                    DispatchQueue.main.async {
+                        let image = UIImage(data: data)
+                        imageView.image = image
+                    }
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
         } else if message.kind.messageKindString == "video" {
         }
     }
