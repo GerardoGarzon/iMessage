@@ -32,6 +32,7 @@
 * Sing Up with Google and Facebook
 * Login and register using email and password
 * Upload your profile picture
+* Image cache management
 * Search bar for new conversations
 * Messages:
     - Text
